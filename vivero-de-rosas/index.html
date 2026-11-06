@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head><meta name="robots" content="noindex"><script src="/website-samples/vivero-de-rosas/samples-sandbox.js" data-samples-sandbox></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vivero de Rosas · Taco truck in Cypress, TX</title>
+<meta name="description" content="Vivero de Rosas is a family-owned taco truck at 13925 Cypress North Houston Rd, Cypress, TX 77429. Handmade tortillas, quesabirria, pizza birria, tortas, sopes, breakfast tacos and catering (taquizas y cazuelas). Free delivery on orders over $40.">
+<meta name="keywords" content="Vivero de Rosas, taco truck Cypress TX, tacos Cypress Texas, quesabirria Cypress, birria Houston, taquiza Cypress, catering tacos Houston, breakfast tacos Cypress North Houston Rd">
+<meta property="og:type" content="restaurant.restaurant">
+<meta property="og:title" content="Vivero de Rosas · Family-owned taco truck in Cypress, TX">
+<meta property="og:description" content="Handmade tortillas, slow-cooked birria, tortas, sopes and breakfast tacos. Taquizas y cazuelas for any event. 13925 Cypress North Houston Rd.">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_MX">
+<meta name="geo.region" content="US-TX">
+<meta name="geo.placename" content="Cypress, Texas">
+<meta name="geo.position" content="29.9341;-95.6421">
+<meta property="og:image" content="https://viveroderosas.com/img/family.jpg">
+<meta property="og:url" content="https://viveroderosas.com/">
+<link rel="canonical" href="https://viveroderosas.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%23f0b323'%3E%3Cellipse cx='12' cy='5' rx='3' ry='4.5'/%3E%3Cellipse cx='12' cy='19' rx='3' ry='4.5'/%3E%3Cellipse cx='5' cy='12' rx='4.5' ry='3'/%3E%3Cellipse cx='19' cy='12' rx='4.5' ry='3'/%3E%3Cellipse cx='7' cy='7' rx='3' ry='4.5' transform='rotate(-45 7 7)'/%3E%3Cellipse cx='17' cy='17' rx='3' ry='4.5' transform='rotate(-45 17 17)'/%3E%3Cellipse cx='17' cy='7' rx='3' ry='4.5' transform='rotate(45 17 7)'/%3E%3Cellipse cx='7' cy='17' rx='3' ry='4.5' transform='rotate(45 7 17)'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='3.2' fill='%231f3f99'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:wght@400;600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Vivero de Rosas · the "Sobremesa" design: Talavera blue and white, family story first. Menu, phone and hours come from menu.json (edited at /admin/). */
+html{box-sizing:border-box} body{margin:0; padding:0} img{max-width:100%} [hidden]{display:none !important}
+
+/* Layout: a quiet shell (sticky tab bar + chooser) wrapping five self-contained restaurant designs for the same taco truck, one visible at a time. */
+:root{
+  --sh-bg:#f6f4f0; --sh-fg:#1b1a17; --sh-mut:#625d55; --sh-line:#dcd7cf; --sh-card:#ffffff; --sh-acc:#d9237a; --sh-acc2:#f2b705;
+  --sh-font:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --sh-bg:#141311; --sh-fg:#f1ede6; --sh-mut:#a39d93; --sh-line:#2c2a26; --sh-card:#1d1b18; --sh-acc:#ff5fa8; --sh-acc2:#f7c62d; color-scheme:dark }
+}
+:root[data-theme="dark"]{ --sh-bg:#141311; --sh-fg:#f1ede6; --sh-mut:#a39d93; --sh-line:#2c2a26; --sh-card:#1d1b18; --sh-acc:#ff5fa8; --sh-acc2:#f7c62d; color-scheme:dark }
+
+:root[data-lang="en"] .es{display:none !important}
+:root[data-lang="es"] .en{display:none !important}
+
+*{box-sizing:border-box}
+body{background:var(--sh-bg); color:var(--sh-fg); font-family:var(--sh-font); font-size:16px; line-height:1.55}
+h1,h2,h3,h4{text-wrap:balance; margin:0}
+p,ul,dl{margin:0}
+a{color:inherit}
+button,label.btn{font:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--sh-acc); outline-offset:3px}
+.wrap{max-width:1120px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+
+/* ---------- shell bar ---------- */
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:60; background:var(--sh-card)}
+.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:50; background:var(--sh-card); border-bottom:1px solid var(--sh-line)}
+.bar .wrap{display:flex; align-items:center; gap:14px; padding-block:10px; flex-wrap:wrap}
+.brand{font-weight:700; letter-spacing:.02em; text-decoration:none; white-space:nowrap; font-size:15px; display:flex; align-items:center; gap:8px}
+.brand svg{width:22px; height:22px}
+.tools{display:flex; gap:8px; align-items:center; margin-left:auto}
+.seg{display:inline-flex; border:1px solid var(--sh-line); border-radius:999px; padding:2px}
+.seg button{border:0; background:transparent; color:var(--sh-mut); padding:5px 11px; border-radius:999px; font-size:13px; font-weight:600; letter-spacing:.04em}
+.seg button[aria-pressed="true"]{background:var(--sh-fg); color:var(--sh-bg)}
+
+
+/* ---------- photo slots (shared) ---------- */
+.ph{position:relative; overflow:hidden; background-size:cover; background-position:center; max-width:100%;
+  background-color:var(--ph-bg, #ccc); display:grid; place-items:center}
+.ph::before{content:""; position:absolute; inset:0; background:repeating-linear-gradient(135deg, transparent 0 14px, var(--ph-line, rgba(0,0,0,.06)) 14px 15px)}
+.ph .ph-l{position:relative; font:600 12px/1.3 var(--sh-font); letter-spacing:.1em; text-transform:uppercase; color:var(--ph-fg, rgba(0,0,0,.5)); text-align:center; padding:8px; max-width:100%}
+.ph .ph-l svg{display:block; margin:0 auto 6px; width:26px; height:26px}
+.ph .ph-l small{display:block; text-transform:none; letter-spacing:0; font-weight:500; opacity:.8; margin-top:2px}
+.ph.has-img::before, .ph.has-img .ph-l{display:none}
+.ph.has-img{filter:saturate(1.08) contrast(1.04)}
+
+
+/* ---------- shared menu markup (rendered by script, styled per design) ---------- */
+.menu{list-style:none; padding:0; display:grid; gap:0}
+.mi{display:grid; grid-template-columns:1fr auto; gap:4px 14px; align-items:baseline; padding:12px 0}
+.mi-n{font-weight:700}
+.mi-x{display:block; font-weight:400; font-size:.88em; opacity:.78; margin-top:2px}
+.mi-p{font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap}
+.mi-p small{font-weight:500; opacity:.7; font-size:.78em; margin-left:3px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; list-style:none; padding:0}
+.chips li{padding:6px 12px; border-radius:999px; font-weight:600; font-size:14px; border:1.5px solid currentColor}
+.blist{list-style:none; padding:0; display:grid; gap:6px}
+.blist li{display:flex; gap:10px; align-items:baseline}
+.blist li::before{content:"·"; font-weight:900}
+
+
+[data-catering]{margin-top:16px}
+[data-catering] h4{font-size:12px; letter-spacing:.14em; text-transform:uppercase; opacity:.8; margin:14px 0 4px}
+[data-catering] .cat-note{font-size:1em; opacity:.9}
+[data-catering] .mi{border-bottom:1px solid color-mix(in srgb, currentColor 22%, transparent); padding:10px 0}
+
+/* copy button for phone */
+.copy{display:inline-flex; align-items:center; gap:6px; border:1.5px solid currentColor; background:transparent; color:inherit; border-radius:999px; padding:4px 10px; font-size:13px; font-weight:600; vertical-align:middle; margin-left:8px}
+.copy[data-done="1"]{opacity:.7}
+
+
+/* ================= OPTION 3 · SOBREMESA ================= */
+.o3{--ink:#122150; --paper:#f6f8fc; --cob:#1f3f99; --yolk:#f0b323; --mut:#4c5a7d; --card:#fffdf8;
+  background:var(--paper); color:var(--ink); font-family:"Source Sans 3", system-ui, sans-serif; --ph-bg:#dbe3f4; --ph-fg:#1f3f99; --ph-line:rgba(31,63,153,.1)}
+.o3 .disp{font-family:"DM Serif Display", Georgia, serif; font-weight:400}
+.tiles{height:46px; background-color:var(--paper);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Crect width='46' height='46' fill='%23f6f8fc'/%3E%3Cpath d='M0 0h46v46H0z' fill='none' stroke='%231f3f99' stroke-width='1.5'/%3E%3Cpath d='M23 6c4 6 4 11 0 17-4-6-4-11 0-17zm0 34c-4-6-4-11 0-17 4 6 4 11 0 17zM6 23c6-4 11-4 17 0-6 4-11 4-17 0zm34 0c-6 4-11 4-17 0 6-4 11-4 17 0z' fill='%231f3f99'/%3E%3Ccircle cx='23' cy='23' r='3.2' fill='%23f0b323'/%3E%3Cpath d='M0 0l7 0 0 7zM46 0l-7 0 0 7zM0 46l7 0 0-7zM46 46l-7 0 0-7z' fill='%231f3f99'/%3E%3C/svg%3E");
+  background-size:46px 46px}
+.o3-hero{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; padding-block:64px}
+.o3-hero .eyebrow{font-weight:600; letter-spacing:.18em; text-transform:uppercase; font-size:13px; color:var(--cob)}
+.o3-hero h1{font-size:clamp(46px, 7.5vw, 92px); line-height:.98; margin-top:14px}
+.o3-hero h1 em{color:var(--cob)}
+.o3-hero .sub{font-size:20px; color:var(--mut); margin-top:22px; max-width:46ch}
+.o3-hero .sub i{color:var(--ink); font-family:"DM Serif Display", Georgia, serif; font-size:1.1em}
+.o3-frame{padding:14px; border-radius:4px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%231f3f99'/%3E%3Ccircle cx='14' cy='14' r='6' fill='none' stroke='%23f6f8fc' stroke-width='2'/%3E%3Ccircle cx='14' cy='14' r='2' fill='%23f0b323'/%3E%3C/svg%3E"); background-size:28px 28px}
+.o3-frame .ph{aspect-ratio:1; width:100%}
+.o3-story{padding-block:72px; display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start}
+.o3-story h2{font-size:clamp(36px, 5vw, 56px); line-height:1}
+.o3-story .body{display:grid; gap:16px; font-size:18px; margin-top:18px; max-width:52ch}
+.o3-story .def{border-left:3px solid var(--yolk); padding-left:16px; color:var(--mut); font-size:16px}
+.o3-story .def b{color:var(--ink); font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:22px}
+.recipe{background:var(--card); border-radius:6px; box-shadow:0 1px 0 #e3dccb, 0 14px 30px rgba(18,33,80,.12); padding:26px 28px 30px; transform:rotate(-1.2deg);
+  background-image:linear-gradient(transparent 0 46px, #e57373 46px 47px, transparent 47px), repeating-linear-gradient(transparent 0 31px, #c9d6ee 31px 32px);
+  background-position:0 0, 0 47px; background-size:100% 100%, 100% 32px; background-repeat:no-repeat, repeat-y}
+.recipe .rt{font-family:"Caveat", cursive; font-size:32px; font-weight:700; line-height:1.3; color:var(--cob); height:47px}
+.recipe .meta{display:flex; gap:20px; flex-wrap:wrap; font-family:"Caveat", cursive; font-size:21px; color:var(--mut); line-height:32px}
+.recipe ul{list-style:none; margin:0; padding:0; font-family:"Caveat", cursive; font-size:23px; line-height:32px; color:var(--ink)}
+.recipe ul li{display:flex; gap:10px}
+.recipe ul .q{min-width:5.4em; color:var(--cob); font-weight:700}
+.recipe .how{font-family:"Caveat", cursive; font-size:23px; line-height:32px; color:var(--ink)}
+.recipe .how b{color:var(--cob)}
+.o3-menu{background:#fff; border-block:1.5px solid var(--cob)}
+.o3-menu .wrap{padding-block:64px}
+.o3-menu h2{font-size:clamp(36px, 5vw, 56px); text-align:center}
+.o3-menu .sub{text-align:center; color:var(--mut); margin-top:8px}
+.o3-menu .cols{display:grid; grid-template-columns:1fr 1fr; gap:0 48px; margin-top:28px}
+.o3-menu .mi{border-bottom:1px dotted #b9c6e6}
+.o3-menu .mi-n{font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:21px}
+.o3-menu .mi-p{color:var(--cob); font-size:19px}
+.o3-menu .extras{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:40px}
+.o3-menu .ex{border:1.5px solid var(--cob); padding:20px; border-radius:4px; background:var(--paper)}
+.o3-menu .ex h3{font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:24px; color:var(--cob)}
+.o3-menu .ex .chips{margin-top:10px} .o3-menu .ex .chips li{font-size:13px; padding:4px 10px}
+.o3-menu .ex .blist{margin-top:10px}
+.o3-menu .ex p{color:var(--mut); margin-top:8px; font-size:15px}
+.o3-band{background:var(--cob); color:#fff}
+.o3-band .wrap{padding-block:64px; display:grid; grid-template-columns:repeat(3,1fr); gap:28px}
+.o3-band h3{font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:30px; color:var(--yolk)}
+.o3-band p{color:#dbe3f6; margin-top:6px; font-size:17px}
+.o3-cater{padding-block:72px 0; scroll-margin-top:64px}
+.o3-cater .plan{display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; background:var(--cob); color:#fff; padding:36px 40px; border-radius:4px}
+.o3-cater h2{font-size:clamp(34px, 5vw, 52px); line-height:1; color:var(--yolk)}
+.o3-cater .lead{font-size:19px; color:#dbe3f6; margin-top:12px; max-width:46ch}
+.o3-cater .call{font-size:20px; color:#dbe3f6}
+.o3-cater .call a{color:#fff; font-weight:700}
+.o3-cater [data-catering]{margin-top:12px; color:#dbe3f6}
+.o3-cater [data-catering] h4{color:var(--yolk); opacity:1}
+.o3-band a[href="#catering"]{color:var(--yolk)}
+.o3-gal{padding-block:72px}
+.o3-gal h2{font-size:clamp(36px, 5vw, 56px)}
+.o3-gal .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:28px}
+.o3-gal .ph{aspect-ratio:4/3; border:6px solid #fff; outline:1.5px solid var(--cob)}
+.o3-letter{padding-block:0 80px}
+.o3-letter .inner{display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; background:#fff; border:1.5px solid var(--cob); padding:40px; border-radius:4px}
+.o3-letter h2{font-size:clamp(34px, 5vw, 52px)}
+.o3-letter p{font-size:18px; color:var(--mut); margin-top:10px; max-width:44ch}
+.o3-letter .sig{font-family:"Caveat", cursive; font-size:34px; color:var(--cob); margin-top:14px}
+.o3-letter dl{display:grid; gap:12px}
+.o3-letter dt{font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:600; color:var(--cob)}
+.o3-letter dd{margin:0; font-size:18px}
+.o3-letter dd a{color:var(--cob)}
+.o3-foot{padding-block:22px; font-size:14px; color:var(--mut)}
+.socials{display:flex; flex-wrap:wrap; gap:8px 14px}
+.socials a{display:inline-flex; align-items:center; gap:6px; color:var(--cob); text-decoration:none; font-weight:600}
+.socials a:hover{text-decoration:underline}
+.socials svg{width:18px; height:18px; fill:currentColor}
+
+
+/* ---------- shell bar: brand, catering link, language ---------- */
+.navlink{font-size:13px; font-weight:600; letter-spacing:.04em; text-decoration:none; color:var(--sh-fg); padding:5px 12px; border:1px solid var(--sh-line); border-radius:999px; white-space:nowrap}
+.navlink:hover{border-color:var(--sh-fg)}
+.bar .wrap{justify-content:space-between}
+.brand{color:var(--sh-fg)}
+/* ---------- responsive ---------- */
+@media (max-width: 900px){
+  .o3-hero, .o3-story, .o3-menu .cols, .o3-letter .inner{grid-template-columns:1fr}
+  .o3-band .wrap, .o3-menu .extras{grid-template-columns:1fr}
+  .o3-cater .plan{grid-template-columns:1fr; gap:20px}
+  .o3-cater .plan{padding:28px 22px}
+}
+@media (max-width: 520px){
+  .o3-gal .grid{grid-template-columns:1fr 1fr}
+  .recipe{padding:22px 18px 26px}
+  .recipe .rt{font-size:28px; white-space:nowrap}
+  .recipe .rt-x{display:none}
+  .recipe .meta{gap:8px 16px}
+}
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Restaurant",
+      "@id": "#vivero-de-rosas",
+      "name": "Vivero de Rosas",
+      "alternateName": ["Vivero de Rosas Taco Truck", "Taquería Vivero de Rosas"],
+      "description": "Family-owned taco truck in Cypress, Texas serving handmade tortillas, quesabirria, pizza birria, ramen birria, tortas, sopes, gorditas, flautas and breakfast tacos. Catering (taquizas y cazuelas) for any event. Free delivery on orders over $40.",
+      "servesCuisine": ["Mexican", "Tacos", "Birria", "Tex-Mex"],
+      "priceRange": "$",
+      "address": {"@type": "PostalAddress", "streetAddress": "13925 Cypress North Houston Rd", "addressLocality": "Cypress", "addressRegion": "TX", "postalCode": "77429", "addressCountry": "US"},
+      "areaServed": ["Cypress TX", "Northwest Houston TX", "Jersey Village TX", "Harris County TX"],
+      "paymentAccepted": "Cash, Visa, Mastercard, American Express, Discover, UnionPay, contactless",
+      "currenciesAccepted": "USD",
+      "knowsLanguage": ["en", "es"],
+      "acceptsReservations": "False",
+      "hasMenu": {
+        "@type": "Menu",
+        "name": "Vivero de Rosas Menu",
+        "inLanguage": ["es", "en"],
+        "hasMenuSection": [
+          {"@type": "MenuSection", "name": "Tacos & Plates", "hasMenuItem": [
+            {"@type": "MenuItem", "name": "Street Taco", "description": "Corn tortilla, your choice of meat", "offers": {"@type": "Offer", "price": "2.50", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Taco", "description": "Flour tortilla or handmade corn tortilla", "offers": {"@type": "Offer", "price": "3.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Quesabirria (3)", "description": "Three quesabirria tacos with consomé", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Torta", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Burrito", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Quesadilla", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Sopes", "offers": {"@type": "Offer", "price": "4.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Platillo de Pollo", "description": "Chicken plate, includes 3 tortillas", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Pizza Birria", "offers": {"@type": "Offer", "price": "17.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Gordita", "offers": {"@type": "Offer", "price": "7.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Ramen Birria", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Platillo de Tacos de Camarón con Soda", "description": "Shrimp taco plate with a soda", "offers": {"@type": "Offer", "price": "14.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Platillo de Flautas", "description": "Flautas with rice and beans", "offers": {"@type": "Offer", "price": "12.00", "priceCurrency": "USD"}}
+          ]},
+          {"@type": "MenuSection", "name": "Lunch Combos", "hasMenuItem": [
+            {"@type": "MenuItem", "name": "Lunch Combo #1", "description": "Four tacos and a free soda", "offers": {"@type": "Offer", "price": "10.00", "priceCurrency": "USD"}},
+            {"@type": "MenuItem", "name": "Lunch Combo #2", "description": "Two gorditas", "offers": {"@type": "Offer", "price": "10.00", "priceCurrency": "USD"}}
+          ]},
+          {"@type": "MenuSection", "name": "Carnes (meats)", "description": "Fajita, pastor, pollo, chorizo, birria, tripa, suadero, camarón, chicharrón"},
+          {"@type": "MenuSection", "name": "Breakfast Tacos", "description": "Chorizo con huevo, jamón con huevo, huevo a la mexicana, tocino con huevo. Flour or corn tortilla."},
+          {"@type": "MenuSection", "name": "Drinks", "description": "Agua fresca del día, 100% natural"}
+        ]
+      },
+      "makesOffer": [
+        {"@type": "Offer", "name": "Catering: taquizas y cazuelas", "description": "Taco bars and cazuelas for any type of event", "category": "Catering"},
+        {"@type": "Offer", "name": "Free delivery on orders over $40", "category": "Delivery"}
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Where is Vivero de Rosas located?", "acceptedAnswer": {"@type": "Answer", "text": "The Vivero de Rosas taco truck is at 13925 Cypress North Houston Rd, Cypress, TX 77429."}},
+        {"@type": "Question", "name": "Does Vivero de Rosas deliver?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Delivery is free on orders over $40. Order ahead or find Vivero de Rosas on DoorDash."}},
+        {"@type": "Question", "name": "Does Vivero de Rosas cater events?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Vivero de Rosas offers taquizas (taco bars) and cazuelas for any type of event, including quinceañeras, weddings, birthdays and office lunches."}},
+        {"@type": "Question", "name": "What meats does Vivero de Rosas serve?", "acceptedAnswer": {"@type": "Answer", "text": "Fajita, pastor, pollo, chorizo, birria, tripa, suadero, camarón and chicharrón."}},
+        {"@type": "Question", "name": "Does Vivero de Rosas serve breakfast tacos?", "acceptedAnswer": {"@type": "Answer", "text": "Yes: chorizo con huevo, jamón con huevo, huevo a la mexicana and tocino con huevo, on flour or corn tortillas."}}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#f0b323"><ellipse cx="12" cy="5" rx="3" ry="4.5"/><ellipse cx="12" cy="19" rx="3" ry="4.5"/><ellipse cx="5" cy="12" rx="4.5" ry="3"/><ellipse cx="19" cy="12" rx="4.5" ry="3"/><ellipse cx="7" cy="7" rx="3" ry="4.5" transform="rotate(-45 7 7)"/><ellipse cx="17" cy="17" rx="3" ry="4.5" transform="rotate(-45 17 17)"/><ellipse cx="17" cy="7" rx="3" ry="4.5" transform="rotate(45 17 7)"/><ellipse cx="7" cy="17" rx="3" ry="4.5" transform="rotate(45 7 17)"/></g><circle cx="12" cy="12" r="3.2" fill="#1f3f99"/></svg>Vivero de Rosas</a>
+    <div class="tools">
+      <a class="navlink" href="#catering">Catering</a>
+      <div class="seg" role="group" aria-label="Language / Idioma">
+        <button data-lang="en" aria-pressed="true">EN</button>
+        <button data-lang="es" aria-pressed="false">ES</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="o3" id="top">
+  <div class="tiles" aria-hidden="true"></div>
+
+  <div class="wrap o3-hero">
+    <div>
+      <div class="eyebrow"><span class="en">Vivero de Rosas · Cypress, Texas</span><span class="es">Vivero de Rosas · Cypress, Texas</span></div>
+      <h1 class="disp"><span class="en">Hecho a mano, <em>every day.</em></span><span class="es">Hecho a mano, <em>todos los días.</em></span></h1>
+      <p class="sub"><span class="en">We're a family-owned taco truck on Cypress North Houston Road. Our tortillas are pressed by hand, our birria simmers all morning, and the best part of the meal is still the <i>sobremesa</i>, the time you stay at the table talking after the plates are empty.</span><span class="es">Somos una taquería familiar sobre ruedas en Cypress North Houston Road. Las tortillas se hacen a mano, la birria se cuece toda la mañana, y lo mejor de la comida sigue siendo la <i>sobremesa</i>, ese rato que te quedas platicando cuando ya no queda nada en el plato.</span></p>
+    </div>
+    <div class="o3-frame"><div class="ph" data-slot="7"></div></div>
+  </div>
+
+  <section class="wrap o3-story">
+    <div>
+      <h2 class="disp"><span class="en">Our table</span><span class="es">Nuestra mesa</span></h2>
+      <div class="body">
+        <p><span class="en">Every family has a dish it's known for. Ours is birria: beef cooked low and slow with dried chiles until it falls apart, served three ways. In crispy quesabirria tacos with consomé. Pressed into a pizza birria cut into slices. And ladled over noodles as ramen birria.</span><span class="es">Toda familia tiene un platillo por el que la conocen. El nuestro es la birria: res cocida a fuego lento con chiles secos hasta que se deshace, servida de tres formas. En tacos de quesabirria con consomé. Prensada en una pizza birria en rebanadas. Y sobre fideos como ramen birria.</span></p>
+        <p><span class="en">The name Vivero de Rosas means "rose nursery." A nursery is where things are raised carefully by hand. So is a kitchen.</span><span class="es">Vivero de Rosas: un vivero es donde las plantas se crían con cuidado y a mano. Una cocina también.</span></p>
+        <p class="def"><b>so·bre·me·sa</b><br><span class="en">The time spent at the table after a meal, talking, laughing, and having one more agua fresca.</span><span class="es">El tiempo que se pasa en la mesa después de comer, platicando, riendo y pidiendo otra agua fresca.</span></p>
+      </div>
+    </div>
+    <div class="recipe" aria-label="House recipe">
+      <div class="rt"><span class="en">House Recipe<span class="rt-x"> · Vivero de Rosas</span></span><span class="es">Receta de la Casa<span class="rt-x"> · Vivero de Rosas</span></span></div>
+      <div class="meta"><span><span class="en">Serves: all of Cypress</span><span class="es">Porciones: todo Cypress</span></span><span><span class="en">Time: since the beginning</span><span class="es">Tiempo: desde el principio</span></span></div>
+      <ul>
+        <li><span class="q">1</span><span><span class="en">family, all hands in</span><span class="es">familia, todos ayudando</span></span></li>
+        <li><span class="q">1</span><span><span class="en">black truck with daisies</span><span class="es">troca negra con flores</span></span></li>
+        <li><span class="q">9</span><span><span class="en">carnes, from fajita to chicharrón</span><span class="es">carnes, de fajita a chicharrón</span></span></li>
+        <li><span class="q"><span class="en">daily</span><span class="es">diario</span></span><span><span class="en">handmade corn tortillas</span><span class="es">tortillas de maíz a mano</span></span></li>
+        <li><span class="q"><span class="en">to taste</span><span class="es">al gusto</span></span><span><span class="en">agua fresca del día, 100% natural</span><span class="es">agua fresca del día, 100% natural</span></span></li>
+      </ul>
+      <p class="how"><b><span class="en">Method:</span><span class="es">Preparación:</span></b> <span class="en">Simmer the birria all morning. Open the window. Always make one extra plate.</span><span class="es">Cueza la birria toda la mañana. Abra la ventanilla. Siempre haga un plato de más.</span></p>
+    </div>
+  </section>
+
+  <section class="o3-menu">
+    <div class="wrap">
+      <h2 class="disp"><span class="en">The menu</span><span class="es">El menú</span></h2>
+      <p class="sub"><span class="en">Prices as posted at the truck. Any carne on tacos, tortas, burritos, sopes and gorditas.</span><span class="es">Precios como están en la troca. Cualquier carne en tacos, tortas, burritos, sopes y gorditas.</span></p>
+      <div class="cols" data-menu data-split></div>
+      <div class="extras">
+        <div class="ex"><h3><span class="en">Lunch combos</span><span class="es">Combos de almuerzo</span></h3><div data-combos></div></div>
+        <div class="ex"><h3>Carnes</h3><div data-carnes></div></div>
+        <div class="ex"><h3><span class="en">Breakfast tacos</span><span class="es">Tacos de desayuno</span></h3><div data-breakfast></div><p><span class="en">Flour or corn tortilla.</span><span class="es">Tortilla de harina o de maíz.</span></p></div>
+        <div class="ex"><h3><span class="en">To drink</span><span class="es">Para tomar</span></h3><p><span class="en">Agua fresca del día, 100% natural. Ask at the window what we made this morning.</span><span class="es">Agua fresca del día, 100% natural. Pregunta en la ventanilla cuál hicimos hoy.</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="o3-band">
+    <div class="wrap">
+      <div><h3><span class="en">Delivery</span><span class="es">Entrega a domicilio</span></h3><p><span class="en">Free on orders over $40. <span data-phone-sentence></span></span><span class="es">Gratis en pedidos de más de $40. <span data-phone-sentence-es></span></span></p></div>
+      <div><h3><span class="en">Taquizas &amp; cazuelas</span><span class="es">Taquizas y cazuelas</span></h3><p><span class="en">Taco bars and big pots of guisado for any event. We set up, we cook, your guests eat. <a href="#catering">See catering</a></span><span class="es">Barras de tacos y cazuelas de guisado para cualquier evento. Nosotros montamos y cocinamos; tus invitados comen. <a href="#catering">Ver catering</a></span></p></div>
+      <div><h3><span class="en">At the window</span><span class="es">En la ventanilla</span></h3><p><span class="en">Cash and all major cards. <span data-hours-en></span></span><span class="es">Efectivo y todas las tarjetas. <span data-hours-es></span></span></p></div>
+    </div>
+  </section>
+
+  <section class="wrap o3-cater" id="catering">
+    <div class="plan">
+      <div>
+        <h2 class="disp"><span class="en">Catering</span><span class="es">Catering</span></h2>
+        <p class="lead"><span class="en">Catering is available for your event. Call us for details.</span><span class="es">Tenemos servicio de catering para tu evento. Llámanos para más información.</span></p>
+        <div data-catering hidden></div>
+      </div>
+      <div class="call">
+        <p><span class="en" data-cater-call-en></span><span class="es" data-cater-call-es></span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap o3-gal">
+    <h2 class="disp"><span class="en">Around the truck</span><span class="es">Alrededor de la troca</span></h2>
+    <div class="grid">
+      <div class="ph" data-slot="1"></div>
+      <div class="ph" data-slot="2"></div>
+      <div class="ph" data-slot="3"></div>
+      <div class="ph" data-slot="4"></div>
+    </div>
+  </section>
+
+  <section class="wrap o3-letter">
+    <div class="inner">
+      <div>
+        <h2 class="disp"><span class="en">Pull up a chair.</span><span class="es">Toma asiento.</span></h2>
+        <p><span class="en">Come by the truck, order ahead, or ask us about your next event.</span><span class="es">Ven a la troca, ordena con anticipación o pregúntanos por tu próximo evento.</span></p>
+        <div class="sig"><span class="en">With love, the Vivero de Rosas family</span><span class="es">Con cariño, la familia Vivero de Rosas</span></div>
+      </div>
+      <dl>
+        <div><dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd><a href="https://www.google.com/maps/search/?api=1&query=13925+Cypress+North+Houston+Rd+Cypress+TX+77429" target="_blank" rel="noopener">13925 Cypress North Houston Rd</a>, Cypress, TX 77429</dd></div>
+        <div data-phone-row hidden><dt><span class="en">Phone</span><span class="es">Teléfono</span></dt><dd><a data-phone-link href="#"></a> <button class="copy" data-copy=""><span class="en">Copy</span><span class="es">Copiar</span></button></dd></div>
+        <div><dt><span class="en">Hours</span><span class="es">Horario</span></dt><dd><span class="en" data-hours-en></span><span class="es" data-hours-es></span></dd></div>
+        <div data-socials-row hidden><dt><span class="en">Follow us</span><span class="es">Síguenos</span></dt><dd class="socials" data-socials></dd></div>
+      </dl>
+    </div>
+  </section>
+  <div class="tiles" aria-hidden="true"></div>
+  <div class="o3-foot"><div class="wrap"><span class="en">Vivero de Rosas · Family-owned · There's always a plate for you.</span><span class="es">Vivero de Rosas · Negocio familiar · Siempre hay un plato para ti.</span></div></div>
+</main>
+
+<script>
+const PHOTOS = ['img/truck.jpg','img/window.jpg','img/menu.jpg','img/taquizas.jpg','img/daisy-menu.jpg','img/daisy-carnes.jpg','img/family.jpg'];
+
+/* Fallback menu data. The live site loads menu.json (edited from /admin/) and overrides these. */
+let MENU = [
+  {en:"Street taco", es:"Street taco", xen:"Corn tortilla, your choice of carne", xes:"Tortilla de maíz, con la carne que elijas", p:"$2.50", u:true},
+  {en:"Taco", es:"Taco", xen:"Flour tortilla or handmade corn tortilla", xes:"Tortilla de harina o de maíz hecha a mano", p:"$3", u:true},
+  {en:"Quesabirria (3)", es:"Quesabirria (3)", xen:"Three crispy tacos with consomé", xes:"Tres tacos dorados con consomé", p:"$12"},
+  {en:"Torta", es:"Torta", xen:"Your choice of carne on telera bread", xes:"Con la carne que elijas, en pan telera", p:"$12"},
+  {en:"Burrito", es:"Burrito", xen:"Your choice of carne, rice and beans", xes:"Con la carne que elijas, arroz y frijoles", p:"$12"},
+  {en:"Quesadilla", es:"Quesadilla", xen:"Flour tortilla, melted cheese, your choice of carne", xes:"Tortilla de harina, queso derretido y la carne que elijas", p:"$12"},
+  {en:"Sopes", es:"Sopes", xen:"Thick corn base, beans, carne, crema, cheese", xes:"Masa gruesa, frijoles, carne, crema y queso", p:"$4", u:true},
+  {en:"Platillo de pollo", es:"Platillo de pollo", xen:"Chicken plate with rice and beans, includes 3 tortillas", xes:"Pollo con arroz y frijoles, incluye 3 tortillas", p:"$12"},
+  {en:"Pizza birria", es:"Pizza birria", xen:"Birria and melted cheese, cut in slices", xes:"Birria y queso derretido, en rebanadas", p:"$17"},
+  {en:"Gordita", es:"Gordita", xen:"Stuffed corn pocket, your choice of carne", xes:"Rellena con la carne que elijas", p:"$7"},
+  {en:"Ramen birria", es:"Ramen birria", xen:"Noodles in birria consomé with meat, onion and cilantro", xes:"Fideos en consomé de birria con carne, cebolla y cilantro", p:"$12"},
+  {en:"Shrimp taco plate with soda", es:"Platillo de tacos de camarón con soda", xen:"Tacos de camarón, rice and beans, and a soda", xes:"Tacos de camarón, arroz, frijoles y refresco", p:"$14"},
+  {en:"Flautas plate", es:"Platillo de flautas", xen:"Crispy flautas with rice and beans", xes:"Flautas doradas con arroz y frijoles", p:"$12"}
+];
+let COMBOS = [
+  {en:"Lunch combo #1", es:"Combo de almuerzo #1", xen:"Four tacos and a free soda", xes:"Cuatro tacos y un refresco gratis", p:"$10"},
+  {en:"Lunch combo #2", es:"Combo de almuerzo #2", xen:"Two gorditas", xes:"Dos gorditas", p:"$10"}
+];
+let CARNES = ["Fajita","Pastor","Pollo","Chorizo","Birria","Tripa","Suadero","Camarón","Chicharrón"];
+let BREAKFAST = [
+  {en:"Chorizo con huevo", es:"Chorizo con huevo"},
+  {en:"Jamón con huevo (ham and egg)", es:"Jamón con huevo"},
+  {en:"Huevo a la mexicana", es:"Huevo a la mexicana"},
+  {en:"Tocino con huevo (bacon and egg)", es:"Tocino con huevo"}
+];
+let CATERING = {note_en:"", note_es:"", items:[]};
+let INFO = {phone:"", hours_en:"", hours_es:"", instagram:"", facebook:"", tiktok:"", doordash:""};
+
+(function(){
+  const root = document.documentElement;
+  const store = {
+    get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+    set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+  };
+  const bi = (en, es) => '<span class="en">' + en + '</span><span class="es">' + es + '</span>';
+
+  /* ---------- render shared menu blocks ---------- */
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const bt = (en, es) => bi(esc(en), esc(es || en));
+  function menuHTML(items){
+    return '<ul class="menu">' + items.map(m =>
+      '<li class="mi"><span class="mi-n">' + bt(m.en, m.es) + (m.xen || m.xes ? '<span class="mi-x">' + bt(m.xen, m.xes) + '</span>' : '') + '</span>' +
+      '<span class="mi-p">' + esc(m.p) + (m.u ? '<small>' + bi('each','c/u') + '</small>' : '') + '</span></li>').join('') + '</ul>';
+  }
+  function renderMenus(){
+    document.querySelectorAll('[data-menu]').forEach(el => {
+      if (el.hasAttribute('data-split')){
+        const half = Math.ceil(MENU.length / 2);
+        el.innerHTML = menuHTML(MENU.slice(0, half)) + menuHTML(MENU.slice(half));
+      } else el.innerHTML = menuHTML(MENU);
+    });
+    document.querySelectorAll('[data-combos]').forEach(el => { el.innerHTML = COMBOS.length ? menuHTML(COMBOS) : '<p class="mi-x">' + bi('Coming soon.', 'Muy pronto.') + '</p>' });
+    document.querySelectorAll('[data-carnes]').forEach(el => {
+      el.innerHTML = '<ul class="chips">' + CARNES.map(c => '<li>' + esc(c) + '</li>').join('') + '</ul>';
+    });
+    document.querySelectorAll('[data-breakfast]').forEach(el => {
+      el.innerHTML = '<ul class="blist">' + BREAKFAST.map(b => '<li>' + bt(b.en, b.es) + '</li>').join('') + '</ul>';
+    });
+    document.querySelectorAll('[data-catering]').forEach(el => {
+      const c = CATERING || {};
+      let h = '';
+      if (c.note_en || c.note_es) h += '<p class="cat-note">' + bt(c.note_en, c.note_es) + '</p>';
+      if (c.items && c.items.length) h += '<h4>' + bi('Catering packages', 'Paquetes de taquiza') + '</h4>' + menuHTML(c.items);
+      el.innerHTML = h;
+      el.hidden = !h;
+    });
+    /* phone and hours, editable from the admin */
+    const digits = String(INFO.phone || '').replace(/\D/g, '');
+    const nice = digits.length === 10 ? digits.slice(0,3) + '-' + digits.slice(3,6) + '-' + digits.slice(6) : (INFO.phone || '');
+    const tel = digits ? 'tel:+1' + digits : '';
+    const social = (v, host) => { v = String(v || '').trim(); if (!v) return ''; if (/^https?:\/\//i.test(v)) return v; return 'https://' + host + v.replace(/^@/, '').replace(/^\/+/, ''); };
+    const ig = social(INFO.instagram, 'instagram.com/'), fb = social(INFO.facebook, 'facebook.com/'), tt = social(INFO.tiktok, 'tiktok.com/@'), dd = social(INFO.doordash, 'doordash.com/');
+    const ddText = dd ? '<a href="' + esc(dd) + '" target="_blank" rel="noopener">DoorDash</a>' : 'DoorDash';
+    document.querySelectorAll('[data-phone-sentence]').forEach(el => el.innerHTML = (digits ? 'Call <a href="' + tel + '">' + esc(nice) + '</a>, or find us on ' : 'Find us on ') + ddText + '.');
+    document.querySelectorAll('[data-cater-call-en]').forEach(el => el.innerHTML = digits ? 'Call <a href="' + tel + '">' + esc(nice) + '</a>' : 'Ask at the window.');
+    document.querySelectorAll('[data-cater-call-es]').forEach(el => el.innerHTML = digits ? 'Llama al <a href="' + tel + '">' + esc(nice) + '</a>' : 'Pregunta en la ventanilla.');
+    document.querySelectorAll('[data-phone-sentence-es]').forEach(el => el.innerHTML = (digits ? 'Llama al <a href="' + tel + '">' + esc(nice) + '</a> o búscanos en ' : 'Búscanos en ') + ddText + '.');
+    const ICON = {
+      instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.5.2-1.8.3-.4.2-.7.4-1 .7-.3.3-.5.6-.7 1-.1.3-.2.7-.3 1.8C3.4 8.5 3.4 8.9 3.4 12s0 3.5.1 4.7c.1 1.1.2 1.5.3 1.8.2.4.4.7.7 1 .3.3.6.5 1 .7.3.1.7.2 1.8.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.5-.2 1.8-.3.4-.2.7-.4 1-.7.3-.3.5-.6.7-1 .1-.3.2-.7.3-1.8.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.5-.3-1.8-.2-.4-.4-.7-.7-1-.3-.3-.6-.5-1-.7-.3-.1-.7-.2-1.8-.3C15.5 4 15.1 4 12 4zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4zm5.2-2.9a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
+      facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.3v2.3H7.4V14h2.8v8h3.3z"/></svg>',
+      tiktok: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3c.3 2.2 1.6 3.6 3.7 3.8v3.1c-1.4 0-2.6-.4-3.7-1.1v6.4c0 3.3-2.6 5.8-5.8 5.8S4.9 18.5 4.9 15.2c0-3.3 2.6-5.8 5.8-5.8.3 0 .6 0 .9.1v3.2c-.3-.1-.6-.2-.9-.2-1.5 0-2.7 1.2-2.7 2.7s1.2 2.7 2.7 2.7 2.7-1.2 2.7-2.7V3h3.1z"/></svg>',
+      doordash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h10.5c3 0 5.3 2.2 5.3 5s-2.3 5-5.3 5H9l-1.6-2.6h6c1.5 0 2.5-1 2.5-2.4S14.9 9.6 13.4 9.6H4.6L3 7z"/></svg>'
+    };
+    const links = [['instagram', ig, 'Instagram'], ['facebook', fb, 'Facebook'], ['tiktok', tt, 'TikTok'], ['doordash', dd, 'DoorDash']].filter(x => x[1]);
+    document.querySelectorAll('[data-socials-row]').forEach(el => el.hidden = !links.length);
+    document.querySelectorAll('[data-socials]').forEach(el => el.innerHTML = links.map(([k, u, n]) => '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + ICON[k] + n + '</a>').join(''));
+    try{
+      const ld1 = document.querySelector('script[type="application/ld+json"]');
+      const j1 = JSON.parse(ld1.textContent); const r1 = (j1['@graph'] || []).find(n => n['@type'] === 'Restaurant');
+      if (r1){ const same = [ig, fb, tt].filter(Boolean); if (same.length) r1.sameAs = same; else delete r1.sameAs; ld1.textContent = JSON.stringify(j1, null, 2); }
+    }catch(e){}
+    document.querySelectorAll('[data-phone-row]').forEach(el => { el.hidden = !digits; const a = el.querySelector('[data-phone-link]'); a.textContent = nice; a.href = tel; el.querySelector('.copy').dataset.copy = digits; });
+    const hEn = INFO.hours_en || (digits ? "Call for today's hours." : 'Hours vary. Ask at the window.');
+    const hEs = INFO.hours_es || (digits ? 'Llama para el horario de hoy.' : 'El horario varía. Pregunta en la ventanilla.');
+    document.querySelectorAll('[data-hours-en]').forEach(el => el.textContent = hEn);
+    document.querySelectorAll('[data-hours-es]').forEach(el => el.textContent = hEs);
+    try{
+      const ld0 = document.querySelector('script[type="application/ld+json"]');
+      const j0 = JSON.parse(ld0.textContent); const r0 = (j0['@graph'] || []).find(n => n['@type'] === 'Restaurant');
+      if (r0){ if (digits) r0.telephone = '+1-' + nice; else delete r0.telephone; ld0.textContent = JSON.stringify(j0, null, 2); }
+    }catch(e){}
+    /* keep Google's structured menu data in sync */
+    try{
+      const ld = document.querySelector('script[type="application/ld+json"]');
+      const j = JSON.parse(ld.textContent);
+      const r = (j['@graph'] || []).find(n => n['@type'] === 'Restaurant');
+      const item = m => ({"@type":"MenuItem", name: m.en, description: m.xen || undefined, offers: {"@type":"Offer", price: String(m.p || '').replace(/[^0-9.]/g,''), priceCurrency:"USD"}});
+      if (r && r.hasMenu){
+        r.hasMenu.hasMenuSection = [
+          {"@type":"MenuSection", name:"Tacos & Plates", hasMenuItem: MENU.map(item)},
+          {"@type":"MenuSection", name:"Lunch Combos", hasMenuItem: COMBOS.map(item)},
+          {"@type":"MenuSection", name:"Carnes (meats)", description: CARNES.join(', ')},
+          {"@type":"MenuSection", name:"Breakfast Tacos", description: BREAKFAST.map(b => b.en).join(', ') + '. Flour or corn tortilla.'},
+          {"@type":"MenuSection", name:"Drinks", description:"Agua fresca del día, 100% natural"}
+        ].concat(CATERING && CATERING.items && CATERING.items.length ? [{"@type":"MenuSection", name:"Catering", hasMenuItem: CATERING.items.map(item)}] : []);
+        ld.textContent = JSON.stringify(j, null, 2);
+      }
+    }catch(e){}
+  }
+  renderMenus();
+  /* live menu: menu.json is edited from the admin page and committed to the site */
+  fetch('menu.json', {cache:'no-store'}).then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || !Array.isArray(d.menu)) return;
+    MENU = d.menu; COMBOS = d.combos || []; CARNES = d.carnes || CARNES; BREAKFAST = d.breakfast || BREAKFAST; CATERING = d.catering || CATERING; INFO = d.info || INFO;
+    renderMenus();
+  }).catch(() => {});
+
+  /* ---------- language: saved choice, else the phone's language ---------- */
+  function setLang(l){
+    root.dataset.lang = l; root.lang = l;
+    document.querySelectorAll('button[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
+  }
+  const saved = store.get('vr-lang');
+  setLang(saved || ((navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en'));
+  document.querySelectorAll('button[data-lang]').forEach(b => b.addEventListener('click', () => { setLang(b.dataset.lang); store.set('vr-lang', b.dataset.lang); }));
+
+  /* ---------- copy phone ---------- */
+  document.querySelectorAll('.copy[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.copy;
+    const done = () => { b.dataset.done = '1'; b.innerHTML = bi('Copied','Copiado'); setTimeout(() => { b.dataset.done = ''; b.innerHTML = bi('Copy','Copiar') }, 1600) };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(done).catch(done); else done();
+  }));
+
+  /* ---------- photos ---------- */
+  const SLOT = {1:"the truck", 2:"at the window", 3:"the menu", 4:"taquizas y cazuelas flyer", 5:"yellow daisy menu painted on the truck", 6:"pink daisy carnes painted on the truck", 7:"the family"};
+  document.querySelectorAll('.ph[data-slot]').forEach(s => {
+    const n = +s.dataset.slot, src = PHOTOS[n - 1];
+    s.setAttribute('role', 'img');
+    s.setAttribute('aria-label', 'Vivero de Rosas, Cypress TX: ' + SLOT[n]);
+    if (src){ s.style.backgroundImage = 'url("' + src + '")'; s.classList.add('has-img'); }
+  });
+})();
+</script>
+</body>
+</html>

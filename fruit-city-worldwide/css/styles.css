@@ -1,0 +1,1001 @@
+/* ============================================================
+   Fruit City Worldwide — Main Stylesheet
+   fruitcityworldwide.org
+   ============================================================
+   Organized sections:
+     1.  CSS Variables (colors, fonts, spacing)
+     2.  Reset & Base
+     3.  Typography
+     4.  Layout Helpers
+     5.  Buttons
+     6.  Header & Navigation
+     7.  Hero — Home Page
+     8.  Mission Poem Block
+     9.  Section Titles
+     10. Cards
+     11. Stat / Callout Blocks
+     12. Pillar / Feature Blocks (alternating)
+     13. Quote / Testimonial
+     14. Timeline / List Sections
+     15. Spec Table
+     16. Tag Badges
+     17. Get Involved Grid
+     18. Footer
+     19. Page Banner (inner pages)
+     20. Utility Classes
+     21. Responsive — Mobile
+   ============================================================ */
+
+/* ============================================================
+   1. CSS VARIABLES
+      Change a value here to update it everywhere on the site.
+   ============================================================ */
+:root {
+  /* ── Core Palette ── */
+  --dark:        #0D2818;   /* deep forest — nav, hero, footer */
+  --forest:      #1A5C33;   /* main forest green — headings, accents */
+  --leaf:        #3A8C50;   /* medium green — buttons, links */
+  --light-leaf:  #6BBF7A;   /* bright green — highlights, icons */
+  --gold:        #C8961E;   /* warm gold — key callouts, accents */
+  --earth:       #7A5230;   /* earth brown — secondary accent */
+  --sky:         #5B9EC9;   /* sky blue — technology / water sections */
+  --cream:       #F8F4ED;   /* warm cream — page background */
+  --white:       #FFFFFF;
+  --text-dark:   #1C1C1C;
+  --text-mid:    #3E3E3E;
+  --text-light:  #6A6A6A;
+
+  /* ── Typography ── */
+  --font-heading: 'Georgia', 'Times New Roman', serif;
+  --font-body:    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+  /* ── Spacing (multiples of 8px) ── */
+  --space-xs: 0.5rem;    /*  8px */
+  --space-sm: 1rem;      /* 16px */
+  --space-md: 1.5rem;    /* 24px */
+  --space-lg: 2.5rem;    /* 40px */
+  --space-xl: 4rem;      /* 64px */
+  --space-2xl: 6rem;     /* 96px */
+
+  /* ── Layout ── */
+  --max-width: 1100px;
+  --radius: 8px;
+  --transition: 0.25s ease;
+}
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background-color: var(--cream);
+  line-height: 1.75;
+}
+
+/* Site-wide Fruit City backdrop. A fixed pseudo-element instead of
+   background-attachment: fixed, which iOS Safari doesn't support. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('../assets/images/fruit-city-background.jpg') center / cover no-repeat;
+  pointer-events: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--leaf);
+  text-decoration: underline;
+  transition: color var(--transition);
+}
+
+a:hover, a:focus {
+  color: var(--forest);
+}
+
+/* ============================================================
+   3. TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  color: var(--forest);
+}
+
+h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); }
+h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); }
+h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
+h4 { font-size: 1.1rem; font-weight: 700; }
+
+p {
+  margin-bottom: var(--space-sm);
+  color: var(--text-mid);
+}
+
+ul, ol {
+  padding-left: var(--space-md);
+  color: var(--text-mid);
+}
+
+li { margin-bottom: 0.4rem; }
+
+/* Screen-reader only — visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   4. LAYOUT HELPERS
+   ============================================================ */
+.container {
+  width: 90%;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section {
+  padding: var(--space-xl) 0;
+  background-color: rgba(248, 244, 237, 0.88);   /* cream over the backdrop */
+}
+
+.section--alt {
+  background-color: rgba(255, 255, 255, 0.86);
+}
+
+.section--dark {
+  background-color: rgba(13, 40, 24, 0.88);
+  color: var(--white);
+}
+
+.section--forest {
+  background-color: rgba(26, 92, 51, 0.88);
+  color: var(--white);
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* ============================================================
+   5. BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition), transform var(--transition), color var(--transition);
+  border: 2px solid transparent;
+}
+
+.btn--primary {
+  background-color: var(--leaf);
+  color: var(--white);
+  border-color: var(--leaf);
+}
+
+.btn--primary:hover, .btn--primary:focus {
+  background-color: var(--forest);
+  border-color: var(--forest);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.btn--gold {
+  background-color: var(--gold);
+  color: var(--white);
+  border-color: var(--gold);
+}
+
+.btn--gold:hover, .btn--gold:focus {
+  background-color: #a87a10;
+  border-color: #a87a10;
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.btn--outline {
+  background-color: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.btn--outline:hover, .btn--outline:focus {
+  background-color: var(--white);
+  color: var(--dark);
+  transform: translateY(-2px);
+}
+
+.btn--outline-green {
+  background-color: transparent;
+  color: var(--leaf);
+  border-color: var(--leaf);
+}
+
+.btn--outline-green:hover, .btn--outline-green:focus {
+  background-color: var(--leaf);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   6. HEADER & NAVIGATION
+   ============================================================ */
+.site-header {
+  background-color: var(--dark);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,.4);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+
+.site-logo {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-logo__name {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--white);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.site-logo__sub {
+  font-size: 0.7rem;
+  color: var(--light-leaf);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-nav__list {
+  list-style: none;
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.site-nav__list a {
+  color: rgba(255,255,255,.85);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.site-nav__list a:hover,
+.site-nav__list a:focus,
+.site-nav__list a[aria-current="page"] {
+  color: var(--light-leaf);
+  border-bottom-color: var(--light-leaf);
+}
+
+.site-nav__list .nav-cta {
+  background-color: var(--gold);
+  color: var(--white);
+  padding: 0.4rem 1.1rem;
+  border-radius: var(--radius);
+  border-bottom: none;
+  transition: background-color var(--transition);
+}
+
+.site-nav__list .nav-cta:hover,
+.site-nav__list .nav-cta:focus {
+  background-color: #a87a10;
+  color: var(--white);
+  border-bottom-color: transparent;
+}
+
+/* Hamburger toggle */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  color: var(--white);
+}
+
+.nav-toggle__icon,
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  display: block;
+  width: 26px;
+  height: 2px;
+  background-color: var(--white);
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.nav-toggle__icon { position: relative; }
+
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle__icon::before { top: -8px; }
+.nav-toggle__icon::after  { top:  8px; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon { background-color: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon::before { transform: translateY(8px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon::after  { transform: translateY(-8px) rotate(-45deg); }
+
+/* ============================================================
+   7. HOME PAGE HERO
+   ============================================================ */
+.hero {
+  background-color: rgba(13, 40, 24, 0.45);
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-2xl) 0;
+}
+
+/* Layered radial gradients for a cosmic / nature feel */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 60%, rgba(26, 92, 51, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(200, 150, 30, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(13, 40, 24, 0.8) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--light-leaf);
+  margin-bottom: var(--space-md);
+}
+
+.hero h1 {
+  color: var(--white);
+  margin-bottom: var(--space-md);
+  text-shadow: 0 2px 20px rgba(0,0,0,.6);
+}
+
+.hero__subtitle {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,.92);
+  text-shadow: 0 1px 8px rgba(0,0,0,.6);
+  max-width: 620px;
+  margin: 0 auto var(--space-lg);
+}
+
+.hero__ctas {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   8. MISSION POEM BLOCK
+      Displays the founding poem as a visual centerpiece.
+   ============================================================ */
+.mission-poem {
+  background-color: rgba(26, 92, 51, 0.88);
+  color: var(--white);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-poem::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(106,191,122,.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.poem {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Each line of the poem */
+.poem__line {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.5;
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+/* The final "Fruit City" reveal line */
+.poem__line--emphasis {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--gold);
+  font-style: normal;
+  font-weight: bold;
+  margin-top: var(--space-sm);
+  letter-spacing: 0.04em;
+}
+
+/* Decorative divider between poem lines */
+.poem__divider {
+  width: 40px;
+  height: 2px;
+  background-color: var(--light-leaf);
+  margin: var(--space-sm) auto;
+  border: none;
+}
+
+/* ============================================================
+   9. SECTION TITLES
+   ============================================================ */
+.section-title {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.section-title h2 { margin-bottom: var(--space-xs); }
+
+.section-title p {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Gold underline on section headings */
+.section-title h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: var(--gold);
+  margin: var(--space-xs) auto 0;
+  border-radius: 2px;
+}
+
+/* White underline variant for dark backgrounds */
+.section-title--light h2 {
+  color: var(--white);
+}
+
+.section-title--light h2::after {
+  background-color: var(--light-leaf);
+}
+
+.section-title--light p {
+  color: rgba(255,255,255,.75);
+}
+
+/* ============================================================
+   10. CARDS
+   ============================================================ */
+.card {
+  background-color: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+.card__body {
+  padding: var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--light-leaf);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.card__icon--gold   { background-color: var(--gold); }
+.card__icon--sky    { background-color: var(--sky); }
+.card__icon--earth  { background-color: var(--earth); }
+
+.card__body h3 { margin-bottom: var(--space-xs); }
+
+.card__body p { flex: 1; }
+
+/* ============================================================
+   11. STAT / CALLOUT BLOCKS
+   ============================================================ */
+.callout-bar {
+  background-color: var(--dark);
+  padding: var(--space-lg) 0;
+  text-align: center;
+}
+
+.callout-bar__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.callout-stat__number {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: bold;
+  color: var(--gold);
+  display: block;
+}
+
+.callout-stat__label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,.75);
+}
+
+/* Highlighted warning/crisis block */
+.crisis-block {
+  background-color: #1a0a05;
+  border-left: 5px solid var(--gold);
+  border-radius: var(--radius);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-md) 0;
+}
+
+.crisis-block p {
+  color: rgba(255,255,255,.85);
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+/* ============================================================
+   12. PILLAR / FEATURE BLOCKS (alternating image + text)
+   ============================================================ */
+.feature-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: center;
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid rgba(0,0,0,.07);
+}
+
+/* Alternate image side every other block */
+.feature-block:nth-child(even) .feature-block__visual { order: 2; }
+.feature-block:nth-child(even) .feature-block__text   { order: 1; }
+
+.feature-block__visual {
+  border-radius: var(--radius);
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  background-color: var(--forest);
+  color: var(--white);
+}
+
+/* Visual color variants */
+.feature-block__visual--gold  { background-color: var(--earth); }
+.feature-block__visual--sky   { background-color: var(--sky); }
+.feature-block__visual--dark  { background-color: var(--dark); }
+
+.feature-block__tag {
+  display: inline-block;
+  background-color: var(--light-leaf);
+  color: var(--dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: var(--space-xs);
+}
+
+.feature-block__tag--gold  { background-color: var(--gold);  color: var(--white); }
+.feature-block__tag--sky   { background-color: var(--sky);   color: var(--white); }
+.feature-block__tag--earth { background-color: var(--earth); color: var(--white); }
+
+.feature-block__text h3  { margin-bottom: var(--space-xs); }
+.feature-block__text ul  { margin-bottom: var(--space-sm); }
+
+/* ============================================================
+   13. QUOTE BLOCK
+   ============================================================ */
+.quote-block {
+  background-color: rgba(13, 40, 24, 0.88);
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+.quote-block blockquote {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.quote-block__text {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.quote-block__text::before { content: '\201C'; }
+.quote-block__text::after  { content: '\201D'; }
+
+.quote-block__cite {
+  font-size: 0.88rem;
+  color: var(--gold);
+  font-style: normal;
+}
+
+/* ============================================================
+   14. TIMELINE / NUMBERED LIST SECTIONS
+   ============================================================ */
+.timeline {
+  list-style: none;
+  padding: 0;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.timeline__item {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  align-items: flex-start;
+}
+
+.timeline__number {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--forest);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.timeline__body h4 { color: var(--forest); margin-bottom: 0.2rem; }
+
+/* ============================================================
+   15. SPEC TABLE
+      For building specifications with label : value pairs.
+   ============================================================ */
+.spec-list {
+  list-style: none;
+  padding: 0;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.spec-list li {
+  display: flex;
+  gap: var(--space-sm);
+  padding: 0.75rem var(--space-md);
+  border-bottom: 1px solid rgba(0,0,0,.07);
+  margin-bottom: 0;
+}
+
+.spec-list li:last-child { border-bottom: none; }
+
+.spec-list li:nth-child(even) { background-color: rgba(0,0,0,.025); }
+
+.spec-label {
+  font-weight: 700;
+  color: var(--forest);
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.spec-value { color: var(--text-mid); }
+
+/* ============================================================
+   16. TAG BADGES
+   ============================================================ */
+.tag {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tag--green { background-color: var(--light-leaf); color: var(--dark); }
+.tag--gold  { background-color: var(--gold); color: var(--white); }
+.tag--sky   { background-color: var(--sky);  color: var(--white); }
+.tag--earth { background-color: var(--earth); color: var(--white); }
+
+/* ============================================================
+   17. GET INVOLVED GRID
+   ============================================================ */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-sm);
+}
+
+.role-card {
+  background-color: var(--white);
+  border: 2px solid rgba(58,140,80,.2);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  text-align: center;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.role-card:hover {
+  border-color: var(--leaf);
+  transform: translateY(-3px);
+}
+
+.role-card__icon { font-size: 2.2rem; margin-bottom: var(--space-xs); }
+.role-card__name { font-weight: 700; color: var(--forest); }
+
+/* ============================================================
+   18. FOOTER
+   ============================================================ */
+.site-footer {
+  background-color: var(--dark);
+  color: rgba(255,255,255,.75);
+  padding: var(--space-xl) 0 var(--space-md);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.footer-brand__name {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--white);
+  margin-bottom: var(--space-xs);
+}
+
+.footer-brand__desc {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,.55);
+  margin-bottom: var(--space-md);
+}
+
+.footer-col h4 {
+  color: var(--gold);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-sm);
+}
+
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col li { margin-bottom: 0.45rem; }
+
+.footer-col a {
+  color: rgba(255,255,255,.65);
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: color var(--transition);
+}
+
+.footer-col a:hover { color: var(--white); }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,.4);
+}
+
+.footer-bottom a { color: rgba(255,255,255,.55); text-decoration: underline; }
+
+/* ============================================================
+   19. PAGE BANNER (inner pages)
+   ============================================================ */
+.page-banner {
+  background-color: rgba(13, 40, 24, 0.55);
+  padding: var(--space-lg) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 70%, rgba(26,92,51,.4) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.page-banner .container { position: relative; }
+
+.page-banner h1 { color: var(--white); margin-bottom: var(--space-xs); }
+
+.page-banner p {
+  color: rgba(255,255,255,.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  margin-top: var(--space-sm);
+  color: rgba(255,255,255,.45);
+}
+
+.breadcrumb a { color: var(--light-leaf); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb__sep { color: rgba(255,255,255,.3); }
+
+/* ============================================================
+   20. UTILITY CLASSES
+   ============================================================ */
+.text-center { text-align: center; }
+.text-white  { color: var(--white) !important; }
+.text-gold   { color: var(--gold) !important; }
+.text-green  { color: var(--leaf) !important; }
+
+.mt-sm  { margin-top: var(--space-sm); }
+.mt-md  { margin-top: var(--space-md); }
+.mt-lg  { margin-top: var(--space-lg); }
+.mb-sm  { margin-bottom: var(--space-sm); }
+.mb-md  { margin-bottom: var(--space-md); }
+.mb-lg  { margin-bottom: var(--space-lg); }
+
+/* Fade-in animation — triggered by JS when element enters viewport */
+.fade-in {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   21. RESPONSIVE — MOBILE
+   ============================================================ */
+@media (max-width: 768px) {
+
+  .nav-toggle { display: block; }
+
+  .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--dark);
+    padding: var(--space-sm);
+    display: none;
+    box-shadow: 0 6px 16px rgba(0,0,0,.4);
+  }
+
+  .site-nav.is-open { display: block; }
+
+  .site-nav__list {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .site-nav__list li { border-top: 1px solid rgba(255,255,255,.08); }
+
+  .site-nav__list a {
+    display: block;
+    padding: 0.75rem var(--space-sm);
+    border-bottom: none;
+  }
+
+  .feature-block {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-block:nth-child(even) .feature-block__visual,
+  .feature-block:nth-child(even) .feature-block__text {
+    order: unset;
+  }
+
+  .grid-2 { grid-template-columns: 1fr; }
+
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+
+  .hero { min-height: 70vh; padding: var(--space-xl) 0; }
+}
+
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero__ctas  { flex-direction: column; align-items: center; }
+  .spec-label  { min-width: 140px; }
+}

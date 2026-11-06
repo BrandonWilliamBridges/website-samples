@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-05",
+  "stories": 20,
+  "summaries": null,
+  "feeds": [
+    {
+      "source": "Carbon Brief",
+      "ok": true,
+      "items": 12
+    },
+    {
+      "source": "Civil Eats",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "source": "Food Tank",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "source": "GDACS (UN/EU disaster alerts)",
+      "ok": true,
+      "items": 229
+    },
+    {
+      "source": "Inside Climate News",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "source": "Modern Farmer",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "source": "Mongabay",
+      "ok": true,
+      "items": 32
+    },
+    {
+      "source": "NASA Earth Observatory",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "source": "NOAA Climate.gov",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "source": "Phys.org: Earth",
+      "ok": true,
+      "items": 30
+    },
+    {
+      "source": "Reasons to be Cheerful",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "source": "ScienceDaily: Earth & Climate",
+      "ok": true,
+      "items": 60
+    },
+    {
+      "source": "ScienceDaily: Plants & Animals",
+      "ok": true,
+      "items": 60
+    },
+    {
+      "source": "The Conversation: Environment",
+      "ok": true,
+      "items": 25
+    },
+    {
+      "source": "UN News: Climate",
+      "ok": true,
+      "items": 30
+    },
+    {
+      "source": "Yale Environment 360",
+      "ok": true,
+      "items": 100
+    }
+  ],
+  "eonet": true,
+  "weather": true
+}
