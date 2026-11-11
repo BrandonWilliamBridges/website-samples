@@ -1176,7 +1176,8 @@ li { margin-bottom: 0.4rem; }
   accent-color: var(--leaf);
 }
 
-.vol-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+/* Spam trap: invisible but kept in place, so it never widens the page (left: -9999px did in right-to-left languages) */
+.vol-hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .vol-error {
   background-color: #FDECEA;
