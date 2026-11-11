@@ -16,7 +16,7 @@ window.FCW_VOLUNTEER = {
   /* Where the signup form sends applications: the volunteer intake
      service (crm/volunteer-intake in the CRM code). Leave '' until it
      is live; the form then asks people to call or email instead. */
-  applyEndpoint: '',
+  applyEndpoint: 'https://apply.fruitcityworldwide.org/apply',
 
   /* How people reach a person. Already public on contact.html. */
   contactEmail: 'aceofspadeblack@gmail.com',
