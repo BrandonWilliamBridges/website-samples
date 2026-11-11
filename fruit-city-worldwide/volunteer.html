@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     Fruit City Worldwide — Volunteer (volunteer.html)
+     ============================================================
+     Opportunities, what to expect, court-ordered community service
+     and the volunteer application form. The text that is Fruit
+     City's decision (opportunities, rules, approval wording) comes
+     from js/volunteer-config.js; js/volunteer.js fills the page and
+     sends the form.
+     ============================================================ -->
+<html lang="en">
+<head><meta name="robots" content="noindex"><script src="/website-samples/fruit-city-worldwide/samples-sandbox.js" data-samples-sandbox></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer in Houston — Fruit City Worldwide</title>
+  <meta name="description" content="Volunteer with Fruit City Worldwide in the Houston area: planting, food sharing, building, media and teaching. Court-ordered community service applicants welcome.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <header class="site-header" role="banner">
+    <div class="container">
+      <a href="index.html" class="site-logo" aria-label="Fruit City Worldwide — Home">
+        <span class="site-logo__name">Fruit City</span>
+        <span class="site-logo__sub">Worldwide</span>
+      </a>
+      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+        <ul class="site-nav__list" role="list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="vision.html">The Vision</a></li>
+          <li><a href="impact.html">Global Impact</a></li>
+          <li><a href="news.html">News</a></li>
+          <li><a href="volunteer.html">Volunteer</a></li>
+          <li><a href="contact.html">Get Involved</a></li>
+          <li><a href="contact.html" class="nav-cta">Join Us</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="page-banner" aria-labelledby="page-heading">
+      <div class="container">
+        <h1 id="page-heading">Volunteer in Houston</h1>
+        <p>
+          Plant, build, share food, film, teach and more with Fruit City Worldwide.
+          Everyone is welcome, including people completing court-ordered community service.
+        </p>
+        <p class="mt-sm"><a href="#apply" class="btn btn--gold">Apply to volunteer</a></p>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span aria-current="page">Volunteer</span>
+        </nav>
+      </div>
+    </section>
+
+    <nav class="vol-jump" aria-label="On this page">
+      <div class="container">
+        <a href="#ways">Ways to help</a>
+        <a href="#where">Where</a>
+        <a href="#expect">What to expect</a>
+        <a href="#community-service">Community service</a>
+        <a href="#how">How to apply</a>
+        <a href="#apply">Apply</a>
+      </div>
+    </nav>
+
+    <noscript>
+      <section class="section">
+        <div class="container text-center">
+          <p>This page needs JavaScript to show opportunities and the application form.
+          To volunteer, email <a href="mailto:aceofspadeblack@gmail.com">aceofspadeblack@gmail.com</a>
+          or call <a href="tel:+13465415518">346-541-5518</a>.</p>
+        </div>
+      </section>
+    </noscript>
+
+    <section class="section" id="ways" aria-labelledby="ways-heading">
+      <div class="container">
+        <div class="section-title">
+          <h2 id="ways-heading">Ways to Help</h2>
+          <p>No experience needed for most roles. Bring what you know, or come ready to learn.</p>
+        </div>
+        <div class="vol-grid" id="vol-opportunities"></div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="where" aria-labelledby="where-heading">
+      <div class="container vol-narrow">
+        <h2 id="where-heading">Where We Volunteer</h2>
+        <p id="vol-location"></p>
+      </div>
+    </section>
+
+    <section class="section" id="expect" aria-labelledby="expect-heading">
+      <div class="container">
+        <div class="section-title">
+          <h2 id="expect-heading">What to Expect</h2>
+        </div>
+        <div class="vol-info-grid">
+          <div class="vol-info">
+            <h3>Who can volunteer</h3>
+            <div id="vol-eligibility"></div>
+          </div>
+          <div class="vol-info">
+            <h3>Scheduling</h3>
+            <div id="vol-scheduling"></div>
+          </div>
+          <div class="vol-info">
+            <h3>Restrictions</h3>
+            <div id="vol-restrictions"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="community-service" aria-labelledby="cs-heading">
+      <div class="container vol-narrow">
+        <h2 id="cs-heading">Court-Ordered Community Service</h2>
+        <p id="vol-cs-intro"></p>
+        <div id="vol-cs-details">
+          <h3>What we need before accepting a placement</h3>
+          <div id="vol-cs-criteria"></div>
+          <h3>How your hours are confirmed</h3>
+          <div id="vol-cs-verification"></div>
+        </div>
+        <p class="vol-callout" id="vol-cs-disclaimer"></p>
+        <p class="vol-muted" id="vol-cs-privacy"></p>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-heading">
+      <div class="container vol-narrow">
+        <h2 id="how-heading">How to Apply</h2>
+        <ol class="vol-steps">
+          <li><b>Fill out the form below.</b> It takes about five minutes.</li>
+          <li><b>We review your application.</b> A team member contacts you by email or phone.</li>
+          <li><b>Get matched.</b> If there's a fit, we'll share the place, time and anything to bring.</li>
+        </ol>
+        <p>Questions first? Email <a class="js-vol-email" href="mailto:aceofspadeblack@gmail.com">aceofspadeblack@gmail.com</a>
+          or call <a class="js-vol-phone" href="tel:+13465415518">346-541-5518</a>.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="apply" aria-labelledby="apply-heading">
+      <div class="container vol-narrow">
+        <h2 id="apply-heading">Volunteer Application</h2>
+        <p class="vol-muted">Fields marked <span aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.
+          We use your details only to arrange volunteering, and only the Fruit City team can see them.</p>
+
+        <p class="vol-callout" id="vol-closed" hidden></p>
+
+        <form id="vol-form" class="vol-form" novalidate>
+          <div class="vol-hp" aria-hidden="true">
+            <label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <fieldset>
+            <legend>About you</legend>
+            <div class="vol-row">
+              <label>First name *<input type="text" name="first_name" autocomplete="given-name" maxlength="80" required></label>
+              <label>Last name *<input type="text" name="last_name" autocomplete="family-name" maxlength="80" required></label>
+            </div>
+            <div class="vol-row">
+              <label>Email *<input type="email" name="email" autocomplete="email" maxlength="254" required></label>
+              <label>Phone *<input type="tel" name="phone" autocomplete="tel" maxlength="30" required></label>
+            </div>
+            <label>Where in the Houston area are you? *
+              <select name="area" id="vol-area" required><option value="">Choose an area</option></select>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>When can you help? *</legend>
+            <div class="vol-checks" id="vol-availability" data-group="availability"></div>
+            <label>Anything else about your schedule?
+              <input type="text" name="availability_notes" maxlength="300" placeholder="For example: every other Saturday, or after 4 pm">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>What would you like to do?</legend>
+            <div class="vol-checks" id="vol-interests" data-group="interests"></div>
+            <label>Relevant experience or skills
+              <textarea name="experience" maxlength="2000" rows="4" placeholder="Gardening, construction, cooking, filming, teaching, languages you speak… or none yet!"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset id="vol-cs-question">
+            <legend>Are you looking to complete court-ordered community service hours? *</legend>
+            <div class="vol-checks vol-checks--inline">
+              <label class="vol-check"><input type="radio" name="court_ordered" value="no" required> No</label>
+              <label class="vol-check"><input type="radio" name="court_ordered" value="yes"> Yes</label>
+            </div>
+          </fieldset>
+
+          <fieldset id="vol-cs-fields" hidden disabled>
+            <legend>Community service details</legend>
+            <p class="vol-muted" id="vol-cs-form-privacy"></p>
+            <div class="vol-row">
+              <label>Hours you need to complete *
+                <input type="number" name="hours_needed" min="1" max="2000" step="1" inputmode="numeric" required>
+              </label>
+              <label>Deadline to finish them *
+                <input type="date" name="hours_deadline" id="vol-deadline" required>
+              </label>
+            </div>
+            <p class="vol-callout" id="vol-cs-form-disclaimer"></p>
+            <label class="vol-check"><input type="checkbox" name="cs_acknowledged" value="yes" required>
+              I understand that applying does not guarantee acceptance or that my hours will be approved. *</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Agreement</legend>
+            <label class="vol-check" id="vol-age-row" hidden><input type="checkbox" name="age_confirmed" value="yes" disabled required>
+              <span id="vol-age-text"></span></label>
+            <label class="vol-check"><input type="checkbox" name="contact_ok" value="yes" required>
+              Fruit City may contact me by email, phone or text about volunteering. *</label>
+          </fieldset>
+
+          <p class="vol-error" id="vol-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn--primary" id="vol-submit">Send application</button>
+        </form>
+
+        <div class="vol-done" id="vol-done" tabindex="-1" hidden>
+          <h3>Thank you! Your application was sent.</h3>
+          <p>A Fruit City team member will contact you about next steps. If your plans change, email
+            <a class="js-vol-email" href="mailto:aceofspadeblack@gmail.com">aceofspadeblack@gmail.com</a>.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <p class="footer-brand__name">Fruit City Worldwide</p>
+          <p class="footer-brand__desc">
+            A model generator for eco-friendly town towers.<br>
+            All ideas freely given to humanity.<br>
+            501(c)(3) nonprofit — open budget transparency.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="vision.html">The Vision</a></li>
+            <li><a href="impact.html">Global Impact</a></li>
+            <li><a href="news.html">News Roundup</a></li>
+            <li><a href="volunteer.html">Volunteer</a></li>
+            <li><a href="contact.html">Get Involved</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>The Vision</h4>
+          <ul>
+            <li><a href="vision.html#living-model">Living Model</a></li>
+            <li><a href="vision.html#food-production">Food Innovation</a></li>
+            <li><a href="vision.html#energy">Energy &amp; Transport</a></li>
+            <li><a href="vision.html#water">Water &amp; Waste</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Global Impact</h4>
+          <ul>
+            <li><a href="impact.html#conservation">Conservation</a></li>
+            <li><a href="impact.html#philosophy">Philosophy</a></li>
+            <li><a href="impact.html#math">The Math</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span class="footer-year"></span> Fruit City Worldwide. All ideas copyrighted but freely given to humanity.</span>
+        <span><a href="#">Accessibility</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/volunteer-config.js"></script>
+  <script src="js/volunteer.js"></script>
+  <script src="js/i18n.js"></script>
+</body>
+</html>

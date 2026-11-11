@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-05",
+  "date": "2026-11-09",
   "stories": 20,
   "summaries": null,
   "feeds": [
@@ -21,7 +21,7 @@
     {
       "source": "GDACS (UN/EU disaster alerts)",
       "ok": true,
-      "items": 229
+      "items": 302
     },
     {
       "source": "Inside Climate News",

@@ -999,3 +999,191 @@ li { margin-bottom: 0.4rem; }
   .hero__ctas  { flex-direction: column; align-items: center; }
   .spec-label  { min-width: 140px; }
 }
+
+/* ============================================================
+   VOLUNTEER PAGE (volunteer.html)
+   ============================================================ */
+.vol-jump {
+  background-color: var(--white);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  position: relative;
+  z-index: 1;
+}
+
+.vol-jump .container {
+  display: flex;
+  gap: 0.25rem var(--space-sm);
+  overflow-x: auto;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  white-space: nowrap;
+}
+
+.vol-jump a {
+  color: var(--forest);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  padding: 0.35rem 0.25rem;
+}
+
+.vol-jump a:hover,
+.vol-jump a:focus { text-decoration: underline; }
+
+.vol-narrow { max-width: 760px; }
+
+.vol-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-sm);
+}
+
+.vol-card,
+.vol-info {
+  background-color: var(--white);
+  border: 2px solid rgba(58,140,80,.2);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+}
+
+.vol-card h3,
+.vol-info h3 { font-size: 1.15rem; margin-bottom: var(--space-xs); color: var(--forest); }
+.vol-card p { margin-bottom: var(--space-xs); }
+
+.vol-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-sm);
+}
+
+.vol-list { padding-left: 1.2rem; margin: 0; }
+.vol-list li { margin-bottom: 0.35rem; }
+
+.vol-muted { color: var(--text-light); font-size: 0.92rem; }
+
+.vol-callout {
+  background-color: #FFF7E3;
+  border: 1px solid #E8C770;
+  border-radius: var(--radius);
+  padding: var(--space-sm);
+  color: var(--text-dark);
+}
+
+.vol-steps { padding-left: 1.4rem; }
+.vol-steps li { margin-bottom: var(--space-xs); }
+
+#community-service h3 { font-size: 1.1rem; margin: var(--space-md) 0 var(--space-xs); }
+
+/* Form */
+.vol-form,
+.vol-done {
+  background-color: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  padding: var(--space-md);
+}
+
+.vol-form fieldset {
+  border: 0;
+  border-top: 1px solid rgba(0,0,0,.08);
+  margin: 0 0 var(--space-md);
+  padding: var(--space-sm) 0 0;
+  min-width: 0;
+}
+
+.vol-form fieldset:first-of-type { border-top: 0; padding-top: 0; }
+
+.vol-form legend {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  font-size: 1.15rem;
+  color: var(--forest);
+  padding: 0;
+  margin-bottom: var(--space-xs);
+}
+
+.vol-form label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: var(--space-sm);
+  color: var(--text-dark);
+}
+
+.vol-form input[type="text"],
+.vol-form input[type="email"],
+.vol-form input[type="tel"],
+.vol-form input[type="number"],
+.vol-form input[type="date"],
+.vol-form select,
+.vol-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.65rem 0.75rem;
+  min-height: 44px;
+  border: 1px solid #B9C2BB;
+  border-radius: 6px;
+  background-color: var(--white);
+  font: inherit;
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+.vol-form textarea { resize: vertical; }
+
+.vol-form input:focus,
+.vol-form select:focus,
+.vol-form textarea:focus {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+  border-color: var(--leaf);
+}
+
+.vol-form [aria-invalid="true"] { border-color: #B3261E; }
+
+.vol-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 var(--space-sm);
+}
+
+.vol-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.vol-checks--inline { grid-template-columns: repeat(2, max-content); gap: var(--space-md); }
+
+.vol-form label.vol-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-weight: 400;
+  min-height: 44px;
+  padding: 0.55rem 0;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.vol-check input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+  accent-color: var(--leaf);
+}
+
+.vol-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.vol-error {
+  background-color: #FDECEA;
+  border: 1px solid #E6A19B;
+  color: #8C1D18;
+  border-radius: var(--radius);
+  padding: var(--space-sm);
+}
+
+.vol-done h3 { color: var(--forest); }
