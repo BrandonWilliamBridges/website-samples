@@ -50,4 +50,32 @@ INSERT INTO grants (name, funder_org_id, amount, stage, deadline, notes, created
   ('Urban Agriculture Starter Grant (sample)', 5, 15000, 'drafting', date('now', '+30 days'), 'Fictional demo grant.', 'demo'),
   ('Community Garden Mini-Grant (sample)', 5, 2500, 'submitted', date('now', '+10 days'), 'Fictional demo grant.', 'demo'),
   ('Neighborhood Green Space Fund (sample)', NULL, 40000, 'researching', NULL, 'Fictional demo grant.', 'demo');
+
+INSERT INTO programs (id, name, partner_org_id, partner_contact_id, food_source, source_deal_signed, status, start_date, goal_pounds_week, goal_people_week, goal_deliveries_week, goal_volunteers_week, lbs_per_meal, budget_total, notes, created_by) VALUES
+  (1, 'Community Food Rescue (sample)', 4, 9, 'Corner Market (sample)', 1, 'active', date('now', '-72 days'), 350, 80, 1, 5, 1.2, 3500, 'Fictional demo program. Weekly grocery pickups taken to partner pantries.', 'demo'),
+  (2, 'Holiday Produce Drive (sample)', 1, 1, 'Riverbend garden beds (sample)', 0, 'planned', date('now', '+20 days'), 120, 40, NULL, NULL, 1.2, NULL, 'Fictional demo program, not started yet.', 'demo');
+
+INSERT INTO budget_lines (program_id, category, description, estimated, actual, grant_id, notes, created_by) VALUES
+  (1, 'cold storage (coolers, ice)', 'Two 120-quart coolers and weekly ice (sample)', 900, 640, 1, NULL, 'demo'),
+  (1, 'loading (hand truck, bins)', 'Hand truck and 20 stacking bins (sample)', 650, 610, 1, NULL, 'demo'),
+  (1, 'hand-off (tables, canopy)', 'Folding tables and a canopy (sample)', 450, NULL, NULL, NULL, 'demo'),
+  (1, 'fuel or van rental', 'Fuel for weekly runs (sample)', 1200, 180, NULL, NULL, 'demo'),
+  (1, 'food-safe supplies', 'Gloves, thermometers, labels (sample)', 300, 95, NULL, NULL, 'demo');
+
+INSERT INTO deliveries (program_id, date, pickup_source, pounds, items, meals, people_reached, site_org_id, home_deliveries, volunteers, volunteer_hours, miles, cost, notes, created_by) VALUES
+  (1, date('now', '-68 days'), 'Corner Market (sample)', 175, 7, 146, 39, 4, 0, 4, 10.0, 22, NULL, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-61 days'), 'Corner Market (sample)', 181, 7, NULL, 40, 1, 3, 6, 15.0, 18, NULL, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-54 days'), 'Corner Market (sample)', 236, 9, NULL, 52, 4, 0, 3, 7.5, 26, 18.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-47 days'), 'Sunrise Bakery (sample)', 226, 9, 188, 50, 3, 2, 5, 12.5, 22, 14.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-33 days'), 'Corner Market (sample)', 270, 11, NULL, 60, 1, 0, 6, 15.0, 22, 14.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-26 days'), 'Corner Market (sample)', 301, 12, 251, 67, 4, 0, 6, 15.0, 18, 26.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-19 days'), 'Sunrise Bakery (sample)', 323, 13, NULL, 72, 3, 3, 3, 7.5, 26, 18.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-12 days'), 'Corner Market (sample)', 357, 14, NULL, 79, 4, 3, 4, 10.0, 26, 14.00, 'Fictional demo delivery.', 'demo'),
+  (1, date('now', '-5 days'), 'Corner Market (sample)', 388, 16, 323, 86, 1, 3, 4, 10.0, 18, 18.00, 'Fictional demo delivery.', 'demo');
+
+INSERT INTO volunteer_applications (status, first_name, last_name, email, phone, area, availability, availability_notes, interests, experience, court_ordered, hours_needed, hours_deadline, cs_acknowledged, contact_ok, source, next_steps, review_notes, reviewed_by, reviewed_at, submitted_at, created_by) VALUES
+  ('new', 'Taylor', 'Brooks (sample)', 'taylor@example.org', '(555) 010-0131', 'Southwest / Alief / Sugar Land', 'Saturdays, Sundays', NULL, 'growing, food', 'Fictional demo applicant. Helped at a school garden.', 0, NULL, NULL, 0, 1, '/volunteer.html', NULL, NULL, NULL, NULL, datetime('now', '-1 days'), 'website'),
+  ('new', 'Chris', 'Moreno (sample)', 'chris@example.org', '(555) 010-0132', 'East End / Pasadena / Baytown', 'Weekday mornings, Saturdays', 'Free after 9 am', 'building', 'Fictional demo applicant. Some carpentry.', 1, 40, date('now', '+60 days'), 1, 1, '/volunteer.html', NULL, NULL, NULL, NULL, datetime('now', '-2 days'), 'website'),
+  ('reviewing', 'Morgan', 'Lee (sample)', 'morgan@example.org', '(555) 010-0133', 'Inner Loop (Heights, Montrose, Third Ward)', 'Weekday evenings, Remote / from home', NULL, 'media, education', 'Fictional demo applicant. Edits video.', 0, NULL, NULL, 0, 1, '/volunteer.html', 'Hi Morgan, thank you for applying to volunteer with Fruit City Worldwide. We have your application and will be in touch soon.', 'Fictional note: could help with the documentary.', 'demo', datetime('now', '-3 days'), datetime('now', '-5 days'), 'website'),
+  ('accepted', 'Jamie', 'Ortiz (sample)', 'jamie@example.org', '(555) 010-0134', 'North Houston / Aldine', 'Saturdays', NULL, 'food', 'Fictional demo applicant.', 1, 25, date('now', '+30 days'), 1, 1, '/volunteer.html', 'Hi Jamie, we would love to have you volunteer with Fruit City Worldwide. Your first activity: [date, time and place]. Please bring: [what to bring].', NULL, 'demo', datetime('now', '-6 days'), datetime('now', '-9 days'), 'website');
 `;

@@ -4,6 +4,11 @@
 // The Worker verifies the Access JWT and maps the email to a row in `users` (role: admin/member).
 // Members see only the records they created themselves; admins see everything.
 const HTML = ''; // the demo serves ui.html itself
+import { TASKS_SCHEMA, TASKS_SELECT, TASKS_ORDER, tasksScope, ensureTaskTables, userOptions, afterTaskSave, taskUpdatesApi, handleTaskEmail } from './tasks.js';
+import { ensureInteractionColumns, afterInteractionSave, handleMessageReply, DIRECTIONS } from './messages.js';
+import { ensureActivityTable, logActivity, weeklyReport, sendWeeklyReport, watchedUsers } from './activity.js';
+import { ensureAgreements, agreementRow, statusOf, myAgreement, myAgreementApi, agreementsAdminApi, messagesApi, acceptFromInteraction, ADMIN_CONTACTS_SQL, OPEN_WHEN_BLOCKED } from './agreement.js';
+
 const WORSHIP_TYPES = ['church', 'mosque', 'synagogue', 'hindu temple', 'buddhist temple', 'gurdwara'];
 const ORG_TYPES = [...WORSHIP_TYPES, 'nonprofit', 'community center', 'school', 'business', 'government', 'foundation', 'other'];
 const ORG_STATUS = ['prospect', 'contacted', 'engaged', 'partner', 'inactive'];
@@ -16,19 +21,40 @@ const DENOMINATIONS = {
   'buddhist temple': ['Theravada', 'Mahayana', 'Zen', 'Vajrayana / Tibetan', 'Pure Land', 'non-denominational', 'other'],
   gurdwara: ['non-denominational', 'other'],
 };
+const PROGRAM_STATUS = ['planned', 'waiting on partner', 'active', 'paused', 'ended'];
+const BUDGET_CATEGORIES = ['cold storage (coolers, ice)', 'loading (hand truck, bins)', 'hand-off (tables, canopy)', 'food-safe supplies', 'volunteer training', 'fuel or van rental', 'other'];
+// Volunteer applications from the website's volunteer page (crm/volunteer-intake writes them).
+const VOLUNTEER_STATUS = ['new', 'reviewing', 'waiting on applicant', 'accepted', 'not a fit right now', 'withdrawn', 'finished'];
+// Starting text for the "Next steps for the applicant" box when a reviewer picks a status and the box is empty.
+// Fruit City's own wording: edit freely. Words in [brackets] are for the reviewer to fill in; {first_name} is filled automatically.
+// Keep promises out of these until the team has agreed them (for example, never say hours "will be approved").
+const VOLUNTEER_MESSAGES = {
+  reviewing: 'Hi {first_name}, thank you for applying to volunteer with Fruit City Worldwide. We have your application and will be in touch soon.',
+  'waiting on applicant': 'Hi {first_name}, thanks for applying to volunteer with Fruit City Worldwide. Before we can match you, we need: [what is missing].',
+  accepted: 'Hi {first_name}, we would love to have you volunteer with Fruit City Worldwide. Your first activity: [date, time and place]. Please bring: [what to bring]. [For community service: what your supervising agency needs from us.]',
+  'not a fit right now': 'Hi {first_name}, thank you for applying to volunteer with Fruit City Worldwide. We don\'t have a good fit for you right now, but we will keep your details and reach out if that changes.',
+};
+// Applications can include court-ordered community service details, so only admins and the
+// usernames in the VOLUNTEER_REVIEWERS var (wrangler.toml, comma separated) can see them.
+const REVIEWER_ONLY = ['volunteer_applications'];
+const canReview = (env, user) => user.role === 'admin' ||
+  String(env.VOLUNTEER_REVIEWERS || '').split(',').map((u) => u.trim()).filter(Boolean).includes(user.username);
+const visibleSchema = (me) => (me.canReview ? SCHEMA : Object.fromEntries(Object.entries(SCHEMA).filter(([t]) => !REVIEWER_ONLY.includes(t))));
+
 const CONTACT_TYPES = ['pastor', 'imam', 'rabbi', 'priest', 'monk / nun', 'faith leader', 'community leader', 'partner', 'volunteer', 'donor', 'board', 'advisor', 'staff', 'other'];
 
 // Single source of truth for tables + form fields (UI reads this via /api/schema)
 const SCHEMA = {
+  tasks: TASKS_SCHEMA,
   organizations: {
     label: 'Organizations', singular: 'Organization', title: 'name', tagged: true,
     search: ['name', 'type', 'city', 'denomination', 'tags', 'auto_tags', 'notes'],
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true, list: true },
-      { name: 'type', label: 'Type', type: 'select', options: ORG_TYPES, list: true },
-      { name: 'denomination', label: 'Denomination / tradition', type: 'select', dependsOn: 'type', optionsMap: DENOMINATIONS },
-      { name: 'status', label: 'Status', type: 'select', options: ORG_STATUS, list: true },
-      { name: 'address', label: 'Street address', type: 'text', geo: true },
+      { name: 'type', label: 'Type', type: 'select', options: ORG_TYPES, list: true, help: 'What kind of place this is. Places of worship of every faith are listed first; pick other to type your own.' },
+      { name: 'denomination', label: 'Denomination / tradition', type: 'select', dependsOn: 'type', optionsMap: DENOMINATIONS, help: 'The choices change with the type. Leave it blank if you are not sure.' },
+      { name: 'status', label: 'Status', type: 'select', options: ORG_STATUS, list: true, help: 'Prospect: not contacted yet. Contacted: you reached out. Engaged: talking regularly. Partner: working together. Inactive: on hold.' },
+      { name: 'address', label: 'Street address', type: 'text', geo: true, help: 'Type the address and the map pin is found for you.' },
       { name: 'city', label: 'City', type: 'text', list: true, geo: true },
       { name: 'state', label: 'State', type: 'text', geo: true },
       { name: 'zip', label: 'ZIP', type: 'text', geo: true },
@@ -37,7 +63,7 @@ const SCHEMA = {
       { name: 'website', label: 'Website', type: 'url' },
       { name: 'phone', label: 'Phone', type: 'tel', list: true },
       { name: 'email', label: 'Email', type: 'email' },
-      { name: 'tags', label: 'Extra tags (optional, comma separated)', type: 'text' },
+      { name: 'tags', label: 'Extra tags (optional, comma separated)', type: 'text', help: 'Tags like type and city are added for you. Add your own here, such as "garden site", to find records later.' },
       { name: 'notes', label: 'Notes', type: 'textarea' },
     ],
   },
@@ -47,9 +73,9 @@ const SCHEMA = {
     fields: [
       { name: 'first_name', label: 'First name', type: 'text', required: true, list: true },
       { name: 'last_name', label: 'Last name', type: 'text', list: true },
-      { name: 'org_id', label: 'Organization', type: 'ref', ref: 'organizations', list: true, allowNew: true },
+      { name: 'org_id', label: 'Organization', type: 'ref', ref: 'organizations', list: true, allowNew: true, help: 'Where this person works or worships. Pick + Add new organization if it is not listed yet.' },
       { name: 'role', label: 'Role / title', type: 'text', list: true },
-      { name: 'type', label: 'Type', type: 'select', options: CONTACT_TYPES },
+      { name: 'type', label: 'Type', type: 'select', options: CONTACT_TYPES, help: 'How this person relates to Fruit City, for example faith leader, volunteer or donor.' },
       { name: 'email', label: 'Email', type: 'email', list: true },
       { name: 'phone', label: 'Phone', type: 'tel', list: true },
       { name: 'tags', label: 'Extra tags (optional, comma separated)', type: 'text' },
@@ -62,10 +88,12 @@ const SCHEMA = {
     fields: [
       { name: 'date', label: 'Date', type: 'date', list: true, default: 'today' },
       { name: 'kind', label: 'Kind', type: 'select', options: ['call', 'meeting', 'email', 'text', 'visit', 'event', 'other'], list: true },
+      { name: 'direction', label: 'Who reached out', type: 'select', options: DIRECTIONS, list: true, help: 'We contacted them, or they contacted us. Emails sent and received through the CRM fill this in for you.' },
       { name: 'contact_id', label: 'Contact', type: 'ref', ref: 'contacts', list: true },
       { name: 'org_id', label: 'Organization', type: 'ref', ref: 'organizations', list: true, allowNew: true },
-      { name: 'summary', label: 'Summary', type: 'textarea', list: true },
-      { name: 'follow_up_date', label: 'Follow-up date', type: 'date', list: true },
+      { name: 'summary', label: 'Summary', type: 'textarea', list: true, help: 'What happened. If you tick the email box below, this is the message the contact gets.' },
+      { name: 'email_now', label: 'Email this summary to the contact when I save', type: 'checkbox', virtual: true, help: "Sends the Summary to the contact's email address, signed with your name. When they reply, their answer is saved here as a new interaction and you get it by email." },
+      { name: 'follow_up_date', label: 'Follow-up date', type: 'date', list: true, help: 'When to get back in touch. It shows on the Dashboard until you tick Follow-up done.' },
       { name: 'follow_up_done', label: 'Follow-up done', type: 'checkbox' },
     ],
   },
@@ -75,7 +103,7 @@ const SCHEMA = {
     fields: [
       { name: 'date', label: 'Date', type: 'date', list: true, default: 'today' },
       { name: 'amount', label: 'Amount ($)', type: 'number', step: '0.01', list: true },
-      { name: 'method', label: 'Method', type: 'select', options: ['Zelle', 'PayPal', 'check', 'cash', 'in-kind', 'other'], list: true },
+      { name: 'method', label: 'Method', type: 'select', options: ['Zelle', 'PayPal', 'check', 'cash', 'in-kind', 'other'], list: true, help: 'In-kind means goods or services instead of money; describe them in notes.' },
       { name: 'contact_id', label: 'Contact', type: 'ref', ref: 'contacts', list: true },
       { name: 'org_id', label: 'Organization', type: 'ref', ref: 'organizations', list: true, allowNew: true },
       { name: 'notes', label: 'Notes', type: 'textarea' },
@@ -88,15 +116,135 @@ const SCHEMA = {
       { name: 'name', label: 'Grant / opportunity', type: 'text', required: true, list: true },
       { name: 'funder_org_id', label: 'Funder', type: 'ref', ref: 'organizations', list: true, allowNew: true },
       { name: 'amount', label: 'Amount ($)', type: 'number', step: '0.01', list: true },
-      { name: 'stage', label: 'Stage', type: 'select', options: ['researching', 'drafting', 'submitted', 'awarded', 'declined'], list: true },
+      { name: 'stage', label: 'Stage', type: 'select', options: ['researching', 'drafting', 'submitted', 'awarded', 'declined'], list: true, help: 'Where the application stands. Move it along as you go so deadlines do not slip.' },
       { name: 'deadline', label: 'Deadline', type: 'date', list: true },
       { name: 'notes', label: 'Notes', type: 'textarea' },
+    ],
+  },
+
+  // ---- Food rescue tracker. These live under "Food rescue" in the menu, not as their own tabs. ----
+  programs: {
+    label: 'Programs', singular: 'Program', title: 'name', hub: 'impact',
+    intro: 'A program is one ongoing effort you report on, like the weekly food pickups with Food Not Bombs. Set it up once; then log each delivery against it.',
+    search: ['p.name', 'p.food_source', 'p.status', 'p.notes', 'o.name'],
+    fields: [
+      { name: 'name', label: 'Program name', type: 'text', required: true, list: true,
+        help: 'What you call it in grant reports, for example "Community Food Rescue".' },
+      { name: 'partner_org_id', label: 'Partner organization', type: 'ref', ref: 'organizations', list: true, allowNew: true,
+        help: 'The group you run it with, such as Food Not Bombs Houston. Pick it from your organizations so its contacts and history stay linked.' },
+      { name: 'status', label: 'Status', type: 'select', options: PROGRAM_STATUS, list: true,
+        help: 'Planned: not started. Waiting on partner: ready, but a deal or paperwork is pending. Active: deliveries are happening. Paused or Ended when it stops.' },
+      { name: 'start_date', label: 'Start date', type: 'date', list: true,
+        help: 'The first week of deliveries. Grant forms ask for this, and the Impact page counts weeks from it.' },
+      { name: 'food_source', label: 'Main food source', type: 'text', list: true,
+        help: 'Where the food usually comes from, for example a grocery store. Each delivery can name its own source too.' },
+      { name: 'goal_pounds_week', label: 'Goal: pounds per week', type: 'number', step: 'any',
+        help: 'How many pounds of food you aim to move in a typical week. The Impact page shows how close you are.' },
+      { name: 'goal_people_week', label: 'Goal: people reached per week', type: 'number', step: '1',
+        help: 'How many people you aim to reach in a typical week.' },
+      { name: 'partner_contact_id', label: 'Partner contact', type: 'ref', ref: 'contacts', more: true,
+        help: 'Your main person at the partner, so you know who to call.' },
+      { name: 'source_deal_signed', label: 'Food source deal is signed', type: 'checkbox', more: true,
+        help: 'Tick this once the store or partner has agreed in writing. Funders want to see the program is real.' },
+      { name: 'end_date', label: 'End date', type: 'date', more: true, help: 'Leave blank while it is running.' },
+      { name: 'goal_deliveries_week', label: 'Goal: deliveries per week', type: 'number', step: 'any', more: true,
+        help: 'How many pickup-and-drop-off runs you plan each week.' },
+      { name: 'goal_volunteers_week', label: 'Goal: volunteers per week', type: 'number', step: '1', more: true,
+        help: 'How many volunteers you need each week to keep it running.' },
+      { name: 'lbs_per_meal', label: 'Pounds per meal', type: 'number', step: 'any', more: true,
+        help: 'How many pounds of food count as one meal. Use the rate your funder or food bank uses, and keep it the same, so meal counts can be estimated from pounds when nobody counted meals.' },
+      { name: 'budget_total', label: 'Total budget ($)', type: 'number', step: '0.01', more: true,
+        help: 'The program budget you are asking for or working with. Break it into lines under Budget below.' },
+      { name: 'notes', label: 'Notes', type: 'textarea', more: true },
+    ],
+  },
+  deliveries: {
+    label: 'Deliveries', singular: 'Delivery', title: 'date', hub: 'impact',
+    intro: 'Log one row for each pickup and drop-off run. Only the date is required, but pounds and people reached are what grant reports ask for most.',
+    search: ['dv.pickup_source', 'dv.notes', 'p.name', 'o.name'],
+    fields: [
+      { name: 'date', label: 'Date', type: 'date', list: true, default: 'today', required: true },
+      { name: 'program_id', label: 'Program', type: 'ref', ref: 'programs', list: true, default: 'only',
+        help: 'Which program this run belongs to. If you only have one, it is picked for you.' },
+      { name: 'pickup_source', label: 'Picked up from', type: 'text', list: true,
+        help: 'The store or partner the food came from on this run.' },
+      { name: 'pounds', label: 'Pounds of food', type: 'number', step: 'any', list: true,
+        help: 'Total weight moved on this run. A bathroom scale and a few weighed boxes are fine; estimate the rest.' },
+      { name: 'people_reached', label: 'People reached', type: 'number', step: '1', list: true,
+        help: 'How many people received food from this run. Count people, not households, and say so in notes if you counted households.' },
+      { name: 'site_org_id', label: 'Drop-off site', type: 'ref', ref: 'organizations', list: true, allowNew: true,
+        help: 'Where the food went, such as a church, mosque or community center. Leave blank for home deliveries only.' },
+      { name: 'volunteers', label: 'Volunteers', type: 'number', step: '1', list: true,
+        help: 'How many volunteers helped on this run, drivers included.' },
+      { name: 'meals', label: 'Meals', type: 'number', step: 'any', more: true,
+        help: 'Leave blank to estimate meals from pounds, using the program\'s pounds-per-meal rate.' },
+      { name: 'items', label: 'Boxes or items', type: 'number', step: '1', more: true,
+        help: 'Optional count of boxes, bags or items, if that is easier than weight.' },
+      { name: 'home_deliveries', label: 'Home deliveries', type: 'number', step: '1', more: true,
+        help: 'How many drop-offs went straight to people who could not come to a site.' },
+      { name: 'volunteer_hours', label: 'Volunteer hours', type: 'number', step: 'any', more: true,
+        help: 'Total hours across all volunteers on this run. Funders often value volunteer time.' },
+      { name: 'miles', label: 'Miles driven', type: 'number', step: 'any', more: true,
+        help: 'Round-trip miles, for fuel and mileage reporting.' },
+      { name: 'cost', label: 'Cost of this run ($)', type: 'number', step: '0.01', more: true,
+        help: 'Fuel, van rental, ice or supplies spent on this run. Used for cost per pound and per meal.' },
+      { name: 'notes', label: 'Notes', type: 'textarea', more: true },
+    ],
+  },
+  volunteer_applications: {
+    label: 'Volunteer applications', singular: 'Volunteer application', title: 'first_name',
+    intro: 'Applications from the volunteer page on the website. Only admins and named reviewers can see them. Pick a status, write the next steps, then use Email or Text to send them. Saving a new status records who changed it and when.',
+    messages: VOLUNTEER_MESSAGES,
+    search: ['va.first_name', 'va.last_name', 'va.email', 'va.phone', 'va.area', 'va.interests', 'va.experience', 'va.status'],
+    fields: [
+      { name: 'status', label: 'Status', type: 'select', options: VOLUNTEER_STATUS, list: true, required: true,
+        help: 'New: just arrived. Reviewing: someone is looking at it. Waiting on applicant: you asked them for something. Accepted: they can start. Not a fit right now, Withdrawn or Finished close it.' },
+      { name: 'first_name', label: 'First name', type: 'text', list: true, required: true },
+      { name: 'last_name', label: 'Last name', type: 'text', list: true },
+      { name: 'submitted_at', label: 'Applied', type: 'text', list: true, help: 'When the application arrived (UTC).' },
+      { name: 'court_ordered', label: 'Court-ordered hours', type: 'checkbox', list: true,
+        help: 'Ticked when the applicant said they need court-ordered community service hours.' },
+      { name: 'hours_needed', label: 'Hours needed', type: 'number', step: 'any', list: true },
+      { name: 'hours_deadline', label: 'Hours deadline', type: 'date', list: true },
+      { name: 'area', label: 'Area', type: 'text', list: true },
+      { name: 'email', label: 'Email', type: 'email' },
+      { name: 'phone', label: 'Phone', type: 'tel' },
+      { name: 'availability', label: 'Availability', type: 'text' },
+      { name: 'availability_notes', label: 'Schedule notes', type: 'text' },
+      { name: 'interests', label: 'Interested in', type: 'text' },
+      { name: 'experience', label: 'Experience', type: 'textarea' },
+      { name: 'next_steps', label: 'Next steps for the applicant', type: 'textarea',
+        help: 'What you will send them. Picking a status fills in a starting message when this is empty; edit the [brackets] before sending.' },
+      { name: 'review_notes', label: 'Internal notes', type: 'textarea',
+        help: 'For the team only. Never sent to the applicant. Don\'t record case numbers, charges or other legal details here.' },
+      { name: 'contact_ok', label: 'Agreed to be contacted', type: 'checkbox', more: true },
+      { name: 'cs_acknowledged', label: 'Acknowledged acceptance is not guaranteed', type: 'checkbox', more: true },
+      { name: 'age_confirmed', label: 'Confirmed minimum age', type: 'checkbox', more: true },
+      { name: 'source', label: 'Applied on page', type: 'text', more: true },
+    ],
+  },
+  budget_lines: {
+    label: 'Budget lines', singular: 'Budget line', title: 'category', hub: 'impact', hidden: true,
+    search: ['bl.category', 'bl.description', 'bl.notes', 'p.name'],
+    fields: [
+      { name: 'program_id', label: 'Program', type: 'ref', ref: 'programs', list: true, default: 'only', required: true },
+      { name: 'category', label: 'Category', type: 'select', options: BUDGET_CATEGORIES, list: true,
+        help: 'Group costs the way grant forms do, so the totals drop straight into a budget table.' },
+      { name: 'description', label: 'What it is', type: 'text', list: true, help: 'For example "4 large coolers and ice packs".' },
+      { name: 'estimated', label: 'Estimated ($)', type: 'number', step: '0.01', list: true,
+        help: 'Your quote or best guess before buying. Replace guesses with real quotes before you submit a grant.' },
+      { name: 'actual', label: 'Actual spent ($)', type: 'number', step: '0.01', list: true,
+        help: 'What you really paid. Fill it in after buying, for the grant report.' },
+      { name: 'grant_id', label: 'Paid for by grant', type: 'ref', ref: 'grants', list: true,
+        help: 'If a grant covers this line, pick it here so you can show the funder where their money went.' },
+      { name: 'notes', label: 'Notes', type: 'textarea', more: true },
     ],
   },
 };
 
 // List/read SQL with joins so the UI can show names instead of ids
 const SELECT = {
+  tasks: TASKS_SELECT,
   organizations: `SELECT o.*, (SELECT COUNT(*) FROM contacts c WHERE c.org_id=o.id) AS contact_count FROM organizations o`,
   contacts: `SELECT c.*, o.name AS org_id__label FROM contacts c LEFT JOIN organizations o ON o.id=c.org_id`,
   interactions: `SELECT i.*, TRIM(COALESCE(c.first_name,'')||' '||COALESCE(c.last_name,'')) AS contact_id__label, o.name AS org_id__label
@@ -104,15 +252,34 @@ const SELECT = {
   donations: `SELECT d.*, TRIM(COALESCE(c.first_name,'')||' '||COALESCE(c.last_name,'')) AS contact_id__label, o.name AS org_id__label
               FROM donations d LEFT JOIN contacts c ON c.id=d.contact_id LEFT JOIN organizations o ON o.id=d.org_id`,
   grants: `SELECT g.*, o.name AS funder_org_id__label FROM grants g LEFT JOIN organizations o ON o.id=g.funder_org_id`,
+  programs: `SELECT p.*, o.name AS partner_org_id__label, TRIM(COALESCE(c.first_name,'')||' '||COALESCE(c.last_name,'')) AS partner_contact_id__label
+             FROM programs p LEFT JOIN organizations o ON o.id=p.partner_org_id LEFT JOIN contacts c ON c.id=p.partner_contact_id`,
+  deliveries: `SELECT dv.*, p.name AS program_id__label, o.name AS site_org_id__label,
+               CASE WHEN dv.meals IS NULL AND dv.pounds IS NOT NULL AND p.lbs_per_meal > 0 THEN ROUND(dv.pounds / p.lbs_per_meal) END AS meals__estimate
+               FROM deliveries dv LEFT JOIN programs p ON p.id=dv.program_id LEFT JOIN organizations o ON o.id=dv.site_org_id`,
+  volunteer_applications: `SELECT va.* FROM volunteer_applications va`,
+  budget_lines: `SELECT bl.*, p.name AS program_id__label, g.name AS grant_id__label
+                 FROM budget_lines bl LEFT JOIN programs p ON p.id=bl.program_id LEFT JOIN grants g ON g.id=bl.grant_id`,
 };
-const ALIAS = { organizations: 'o', contacts: 'c', interactions: 'i', donations: 'd', grants: 'g' };
+const ALIAS = { tasks: 'tk', organizations: 'o', contacts: 'c', interactions: 'i', donations: 'd', grants: 'g', programs: 'p', deliveries: 'dv', budget_lines: 'bl', volunteer_applications: 'va' };
 const ORDER = {
+  tasks: TASKS_ORDER,
   organizations: 'o.name COLLATE NOCASE', contacts: 'c.first_name COLLATE NOCASE, c.last_name COLLATE NOCASE',
   interactions: 'i.date DESC, i.id DESC', donations: 'd.date DESC, d.id DESC', grants: 'g.deadline IS NULL, g.deadline',
+  programs: 'p.start_date IS NULL, p.start_date DESC, p.id DESC', deliveries: 'dv.date DESC, dv.id DESC', budget_lines: 'bl.program_id, bl.category, bl.id',
+  volunteer_applications: "va.status != 'new', va.submitted_at DESC, va.id DESC",
 };
-// Members only see rows they created, in every table
-const PRIVATE = ALIAS;
-const scopeSql = (table, me) => (me.role !== 'admin' && PRIVATE[table] ? { sql: `${PRIVATE[table]}.created_by=?`, binds: [me.username] } : null);
+// Members only see rows they created, except Food rescue: its program, budget and delivery log are shared team records,
+// so everyone who signs in can see the program and log deliveries against it.
+// Volunteer applications are shared among reviewers; who may see them at all is checked by canReview.
+// Tasks have their own rule: the person who gave a task and the person doing it both see it (tasksScope).
+const SHARED = ['programs', 'deliveries', 'budget_lines', 'tasks', ...REVIEWER_ONLY];
+const PRIVATE = Object.fromEntries(Object.entries(ALIAS).filter(([t]) => !SHARED.includes(t)));
+// Members can also read (never change) the admins' own contact records, so everyone can find how to reach them.
+const scopeSql = (table, me, write = false) => (table === 'tasks' ? tasksScope(me)
+  : me.role !== 'admin' && PRIVATE[table]
+    ? (table === 'contacts' && !write ? { sql: `(c.created_by=? OR ${ADMIN_CONTACTS_SQL})`, binds: [me.username] } : { sql: `${PRIVATE[table]}.created_by=?`, binds: [me.username] })
+    : null);
 const selectFor = (table, me) =>
   table === 'organizations' && me.role !== 'admin'
     ? SELECT.organizations.replace('WHERE c.org_id=o.id', 'WHERE c.org_id=o.id AND c.created_by=' + "'" + me.username.replace(/'/g, "''") + "'")
@@ -145,6 +312,7 @@ export default {
     let user;
     try {
       user = await authenticate(request, env);
+      user.canReview = canReview(env, user);
     } catch (e) {
       if (url.pathname.startsWith('/api/')) return json({ error: e.message }, 401);
       return msgPage(e.message);
@@ -160,6 +328,20 @@ export default {
       return json({ error: e.message }, 500);
     }
   },
+  // Replies to task emails (Email Routing rule: tasks@ -> this Worker)
+  async email(message, env) {
+    await ensureAgreements(env);
+    // Someone limited by the confidentiality agreement can't change tasks by email; those replies go to the admin untouched.
+    const isBlocked = async (u) => u.role !== 'admin' && statusOf(env, await agreementRow(env, u.username)).status === 'blocked';
+    const hit = await handleTaskEmail(message, env, (m) => handleMessageReply(env, m), isBlocked);
+    if (hit) await logActivity(env, { username: hit.username }, 'reply', hit.table, hit.id, hit.label, hit.singular || 'Interaction', 'email');
+    // A "Yes, I agree" reply to a CRM message accepts the confidentiality agreement.
+    if (hit?.table === 'interactions') await acceptFromInteraction(env, hit.id, 'email');
+  },
+  // Weekly report (Cron Trigger in wrangler.toml)
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(sendWeeklyReport(env));
+  },
 };
 
 async function api(request, env, url, me) {
@@ -168,13 +350,48 @@ async function api(request, env, url, me) {
   const db = env.DB;
   const parts = url.pathname.split('/').filter(Boolean); // ['api', table, id]
   const method = request.method;
+  await ensureTaskTables(db);
+  await ensureActivityTable(db);
+  await ensureInteractionColumns(db);
+  await ensureAgreements(env);
 
-  if (parts[1] === 'me') return json({ username: email, role: me.role });
+  // Confidentiality agreement gate: three days after it was sent, until they accept, a member can only read and sign it,
+  // message the admins and see the admins' contact records. Admins are never limited.
+  const ag = isAdmin ? { status: 'none' } : statusOf(env, await agreementRow(env, email));
+  me.limited = ag.status === 'blocked';
+  if (me.limited && !OPEN_WHEN_BLOCKED.includes(parts[1])) {
+    return json({ error: 'Your CRM access is limited until you sign the Fruit City Confidentiality Agreement. Open the Agreement page to read and sign it.', blocked: true }, 403);
+  }
+  if (parts[1] === 'me') return json({ username: email, role: me.role, canReview: me.canReview, limited: me.limited, agreement: await myAgreement(env, me) });
+  if (parts[1] === 'agreement') return myAgreementApi(request, env, me);
+  if (parts[1] === 'messages') return messagesApi(request, env, me, me.email);
+  if (parts[1] === 'agreements') {
+    if (!isAdmin) return json({ error: 'Admins only' }, 403);
+    return agreementsAdminApi(request, env, url, parts[2] ? decodeURIComponent(parts[2]) : null, me);
+  }
   if (parts[1] === 'users') {
     if (!isAdmin) return json({ error: 'Admins only' }, 403);
     return users(request, env, parts[2] ? Number(parts[2]) : null, email);
   }
-  if (parts[1] === 'schema') return json(SCHEMA);
+  if (parts[1] === 'schema') {
+    if (me.limited) return json({});
+    // "Who does it" on tasks lists everyone on the Users page
+    const s = { ...visibleSchema(me) };
+    const names = await userOptions(db);
+    s.tasks = { ...s.tasks, fields: s.tasks.fields.map((f) => (f.name === 'assigned_to' ? { ...f, options: names } : f)) };
+    return json(s);
+  }
+  if (parts[1] === 'tasks' && parts[2] && parts[3] === 'updates') {
+    const res = await taskUpdatesApi(request, env, Number(parts[2]), me);
+    if (method === 'POST' && res.ok) await logActivity(env, me, 'message', 'task_updates', Number(parts[2]), null, 'Task');
+    return res;
+  }
+  // Weekly report: admins can preview it and email it to themselves now (it also goes out every Monday)
+  if (parts[1] === 'report') {
+    if (!isAdmin) return json({ error: 'Admins only' }, 403);
+    if (method === 'POST') return json({ note: await sendWeeklyReport(env) });
+    return json({ ...(await weeklyReport(env)), alertUsers: watchedUsers(env) });
+  }
   if (parts[1] === 'dashboard') return dashboard(db, me);
   if (parts[1] === 'geocode' && method === 'POST') {
     const g = await geocodeAddress(await request.json());
@@ -187,18 +404,20 @@ async function api(request, env, url, me) {
   if (parts[1] === 'related') return related(url.searchParams, db, me);
   if (parts[1] === 'linked') return linked(url.searchParams, db, me);
   if (parts[1] === 'attachments') return attachments(request, env, url, parts, me);
+  if (parts[1] === 'impact') return parts[2] === 'export' ? impactExport(url.searchParams, db, me) : impact(url.searchParams, db, me);
 
   const table = parts[1];
-  const def = SCHEMA[table];
+  const def = visibleSchema(me)[table];
   if (!def) return json({ error: 'Not found' }, 404);
   const id = parts[2] ? Number(parts[2]) : null;
   const a = ALIAS[table];
-  const cols = def.fields.map((f) => f.name);
+  const cols = def.fields.filter((f) => !f.virtual).map((f) => f.name);
   const scope = scopeSql(table, me);
 
-  // Members may only open/edit their own private rows
-  if (id && scope) {
-    const own = await db.prepare(`SELECT 1 FROM ${table} ${a} WHERE ${a}.id=? AND ${scope.sql}`).bind(id, ...scope.binds).first();
+  // Members may only open/edit their own private rows (and read the admins' contact records)
+  const ownScope = method === 'GET' ? scope : scopeSql(table, me, true);
+  if (id && ownScope) {
+    const own = await db.prepare(`SELECT 1 FROM ${table} ${a} WHERE ${a}.id=? AND ${ownScope.sql}`).bind(id, ...ownScope.binds).first();
     if (!own) return json({ error: 'Not found' }, 404);
   }
 
@@ -227,8 +446,10 @@ async function api(request, env, url, me) {
   if (method === 'POST' || method === 'PUT') {
     const body = await request.json();
     const data = {};
+    const virtual = {}; // form-only switches (like "Email this to them"), never saved as columns
     for (const f of def.fields) {
       if (!(f.name in body)) continue;
+      if (f.virtual) { virtual[f.name] = f.type === 'checkbox' ? !!body[f.name] : body[f.name]; continue; }
       let v = body[f.name];
       if (typeof v === 'string') v = v.trim();
       if (v === '' || v === undefined) v = null;
@@ -257,6 +478,18 @@ async function api(request, env, url, me) {
       data.phone_norm = normPhone(full.phone);
     }
     if (def.tagged) data.auto_tags = await autoTags(table, full, db);
+    if (table === 'tasks') {
+      if (method === 'POST' && !data.status) data.status = full.status = 'open';
+      if ('assigned_to' in data && !(await db.prepare(`SELECT 1 FROM users WHERE username=?`).bind(data.assigned_to).first()))
+        return json({ error: 'Pick who does it from the list' }, 400);
+    }
+    if (table === 'volunteer_applications') {
+      if (method === 'POST' && !data.status) data.status = 'new';
+      if ('status' in data && data.status !== (prev?.status ?? null)) {
+        data.reviewed_by = email;
+        data.reviewed_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      }
+    }
 
     const keys = Object.keys(data);
     if (method === 'POST') {
@@ -264,22 +497,34 @@ async function api(request, env, url, me) {
       const vals = keys.map((k) => (k === 'created_by' ? email : data[k]));
       const r = await db.prepare(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(() => '?').join(',')}) RETURNING id`).bind(...vals).first();
       if (table === 'organizations') await retagContacts(db, r.id);
+      await logActivity(env, me, 'add', table, r.id, labelOf(table, def, full), def.singular);
+      if (table === 'tasks') return json({ id: r.id, note: await afterTaskSave(env, me, r.id, {}, { ...full, created_by: email }, virtual.email_now, true) }, 201);
+      if (table === 'interactions') return json({ id: r.id, note: await afterInteractionSave(env, me, r.id, full, virtual.email_now) }, 201);
       return json({ id: r.id }, 201);
     }
     if (!id) return json({ error: 'Missing id' }, 400);
-    if (!keys.length) return json({ id });
-    await db.prepare(`UPDATE ${table} SET ${keys.map((k) => `${k}=?`).join(',')}, updated_at=datetime('now') WHERE id=?`).bind(...keys.map((k) => data[k]), id).run();
+    if (keys.length) await db.prepare(`UPDATE ${table} SET ${keys.map((k) => `${k}=?`).join(',')}, updated_at=datetime('now') WHERE id=?`).bind(...keys.map((k) => data[k]), id).run();
     if (table === 'organizations') await retagContacts(db, id);
+    await logActivity(env, me, 'edit', table, id, labelOf(table, def, full), def.singular);
+    if (table === 'tasks') return json({ id, note: await afterTaskSave(env, me, id, prev, full, virtual.email_now, false) });
+    if (table === 'interactions') return json({ id, note: await afterInteractionSave(env, me, id, full, virtual.email_now) });
     return json({ id });
   }
   if (method === 'DELETE' && id) {
     if (!isAdmin) return json({ error: 'Only admins can delete' }, 403);
+    const gone = await db.prepare(`SELECT * FROM ${table} WHERE id=?`).bind(id).first();
     await removeAttachments(env, table, id);
     await db.prepare(`DELETE FROM ${table} WHERE id=?`).bind(id).run();
+    if (table === 'tasks') await db.prepare(`DELETE FROM task_updates WHERE task_id=?`).bind(id).run();
+    if (gone) await logActivity(env, me, 'delete', table, id, labelOf(table, def, gone), def.singular);
     return json({ ok: true });
   }
   return json({ error: 'Method not allowed' }, 405);
 }
+
+// A readable name for a record in alerts and the activity log
+const labelOf = (table, def, row) => (table === 'contacts' ? [row.first_name, row.last_name].filter(Boolean).join(' ')
+  : row[def.title] ?? row.name ?? row.date ?? null);
 
 // Contacts' auto tags include their organization's name/type/city, so refresh them when an org changes
 async function retagContacts(db, orgId) {
@@ -293,6 +538,7 @@ async function retagContacts(db, orgId) {
 async function dashboard(db, me) {
   const counts = {};
   for (const t of Object.keys(SCHEMA)) {
+    if (SCHEMA[t].hidden || (REVIEWER_ONLY.includes(t) && !me.canReview)) continue;
     const s = scopeSql(t, me);
     counts[t] = (await db.prepare(`SELECT COUNT(*) n FROM ${t} ${ALIAS[t]} ${s ? 'WHERE ' + s.sql : ''}`).bind(...(s ? s.binds : [])).first()).n;
   }
@@ -345,8 +591,9 @@ async function linked(params, db, me) {
 const MAX_UPLOAD = 100 * 1024 * 1024; // Workers accept request bodies up to 100 MB
 const mediaOut = (r) => ({ id: r.id, filename: r.filename, content_type: r.content_type, size: r.size, created_by: r.created_by, created_at: r.created_at, url: `/api/attachments/${r.id}/file` });
 
-async function canSee(db, table, id, me) {
-  const s = scopeSql(table, me);
+async function canSee(db, table, id, me, write = false) {
+  if (REVIEWER_ONLY.includes(table) && !me.canReview) return false;
+  const s = scopeSql(table, me, write);
   const a = ALIAS[table];
   return !!(await db.prepare(`SELECT 1 FROM ${table} ${a} WHERE ${a}.id=? ${s ? 'AND ' + s.sql : ''}`).bind(id, ...(s ? s.binds : [])).first());
 }
@@ -360,22 +607,30 @@ async function attachments(request, env, url, parts, me) {
   if (!aid) { // /api/attachments?table=organizations&id=5
     const table = url.searchParams.get('table');
     const id = Number(url.searchParams.get('id'));
-    if (!SCHEMA[table] || !id || !(await canSee(db, table, id, me))) return json({ error: 'Not found' }, 404);
+    if (!SCHEMA[table] || !id || !(await canSee(db, table, id, me, method !== 'GET'))) return json({ error: 'Not found' }, 404);
     if (method === 'GET') {
       const { results } = await db.prepare(`SELECT * FROM attachments WHERE table_name=? AND record_id=? ORDER BY id`).bind(table, id).all();
       return json(results.map(mediaOut));
     }
     if (method === 'POST') { // raw file in the body, its type in content-type
+      if (REVIEWER_ONLY.includes(table)) return json({ error: "Files can't be attached to volunteer applications. Keep court paperwork out of the CRM." }, 400);
       const type = (request.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
       if (!/^(image|video)\/[\w.+-]+$/.test(type)) return json({ error: 'Only photos and videos can be attached' }, 400);
       const size = Number(request.headers.get('content-length'));
       if (!size) return json({ error: 'That file is empty' }, 400);
       if (size > MAX_UPLOAD) return json({ error: 'Files must be under 100 MB' }, 413);
+      // Hard stop before R2's free 10 GB so storage never costs money (raise MEDIA_LIMIT_GB in wrangler.toml when ready to pay)
+      const limitGb = Number(env.MEDIA_LIMIT_GB) || 9;
+      const used = (await db.prepare(`SELECT COALESCE(SUM(size),0) AS n FROM attachments`).first()).n;
+      if (used + size > limitGb * 1e9) {
+        return json({ error: `Photo & video storage is full (${(used / 1e9).toFixed(2)} of ${limitGb} GB used). Remove some files, or ask an admin to raise the limit.` }, 507);
+      }
       const filename = (url.searchParams.get('name') || 'file').replace(/[\\/\r\n"]/g, '_').slice(0, 200);
       const key = `${table}/${id}/${crypto.randomUUID()}`;
       await env.MEDIA.put(key, request.body, { httpMetadata: { contentType: type } });
       const r = await db.prepare(`INSERT INTO attachments (table_name,record_id,r2_key,filename,content_type,size,created_by) VALUES (?,?,?,?,?,?,?) RETURNING *`)
         .bind(table, id, key, filename, type, size, me.username).first();
+      await logActivity(env, me, 'upload', table, id, filename, SCHEMA[table].singular);
       return json(mediaOut(r), 201);
     }
     return json({ error: 'Method not allowed' }, 405);
@@ -420,6 +675,96 @@ async function removeAttachments(env, table, id) {
   if (!results.length) return;
   if (env.MEDIA) await env.MEDIA.delete(results.map((r) => r.r2_key));
   await env.DB.prepare(`DELETE FROM attachments WHERE table_name=? AND record_id=?`).bind(table, id).run();
+}
+
+// ---- Food rescue impact: totals, weekly trend, goals, cost and breakdowns, for the Impact page and grant reports ----
+// Meals are counted where someone typed them, otherwise estimated from pounds with the program's pounds-per-meal rate.
+const MEALS_SQL = `COALESCE(dv.meals, CASE WHEN dv.pounds IS NOT NULL AND p.lbs_per_meal > 0 THEN dv.pounds / p.lbs_per_meal END)`;
+const WEEK_SQL = `date(dv.date, 'weekday 0', '-6 days')`; // the Monday of the delivery's week
+const FROM_DV = `FROM deliveries dv LEFT JOIN programs p ON p.id=dv.program_id LEFT JOIN organizations o ON o.id=dv.site_org_id`;
+const isDay = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+
+function impactFilter(params, me) {
+  const where = ['dv.date IS NOT NULL'];
+  const binds = [];
+  const s = scopeSql('deliveries', me);
+  if (s) { where.push(s.sql); binds.push(...s.binds); }
+  const pid = Number(params.get('program_id')) || null;
+  if (pid) { where.push('dv.program_id=?'); binds.push(pid); }
+  const from = isDay(params.get('from')) ? params.get('from') : null;
+  const to = isDay(params.get('to')) ? params.get('to') : null;
+  if (from) { where.push('dv.date>=?'); binds.push(from); }
+  if (to) { where.push('dv.date<=?'); binds.push(to); }
+  return { sql: 'WHERE ' + where.join(' AND '), binds, pid, from, to };
+}
+
+async function impact(params, db, me) {
+  const f = impactFilter(params, me);
+  const all = (sql) => db.prepare(sql).bind(...f.binds).all().then((r) => r.results);
+  const ps = scopeSql('programs', me);
+  const programs = (await db.prepare(`${SELECT.programs} ${ps ? 'WHERE ' + ps.sql : ''} ORDER BY ${ORDER.programs}`).bind(...(ps ? ps.binds : [])).all()).results;
+
+  const totals = await db.prepare(`SELECT COUNT(*) AS runs, COUNT(DISTINCT ${WEEK_SQL}) AS weeks, MIN(dv.date) AS first_date, MAX(dv.date) AS last_date,
+      SUM(dv.pounds) AS pounds, SUM(dv.items) AS items, SUM(${MEALS_SQL}) AS meals,
+      SUM(CASE WHEN dv.meals IS NULL THEN ${MEALS_SQL} END) AS meals_estimated,
+      SUM(dv.people_reached) AS people, SUM(dv.home_deliveries) AS home_deliveries,
+      SUM(dv.volunteers) AS volunteers, SUM(dv.volunteer_hours) AS volunteer_hours, SUM(dv.miles) AS miles, SUM(dv.cost) AS cost,
+      SUM(CASE WHEN dv.cost IS NOT NULL THEN dv.pounds END) AS pounds_with_cost,
+      SUM(CASE WHEN dv.cost IS NOT NULL THEN ${MEALS_SQL} END) AS meals_with_cost
+      ${FROM_DV} ${f.sql}`).bind(...f.binds).first();
+  const weekly = await all(`SELECT ${WEEK_SQL} AS week, COUNT(*) AS runs, SUM(dv.pounds) AS pounds, SUM(${MEALS_SQL}) AS meals,
+      SUM(dv.people_reached) AS people, SUM(dv.volunteers) AS volunteers, SUM(dv.cost) AS cost
+      ${FROM_DV} ${f.sql} GROUP BY week ORDER BY week`);
+  const bySource = await all(`SELECT COALESCE(NULLIF(TRIM(dv.pickup_source),''), '(not recorded)') AS name, COUNT(*) AS runs,
+      SUM(dv.pounds) AS pounds, SUM(dv.people_reached) AS people ${FROM_DV} ${f.sql} GROUP BY 1 ORDER BY 3 DESC, 2 DESC LIMIT 25`);
+  const bySite = await all(`SELECT COALESCE(o.name, CASE WHEN dv.home_deliveries > 0 THEN '(home deliveries only)' ELSE '(not recorded)' END) AS name,
+      dv.site_org_id AS org_id, COUNT(*) AS runs, SUM(dv.pounds) AS pounds, SUM(dv.people_reached) AS people
+      ${FROM_DV} ${f.sql} GROUP BY 1, 2 ORDER BY 5 DESC, 4 DESC LIMIT 25`);
+
+  // Goals and budget come from the chosen program, or else from the active programs
+  // (or, when none is active yet, every program that hasn't ended).
+  const running = programs.filter((x) => x.status === 'active');
+  const chosen = f.pid ? programs.filter((x) => x.id === f.pid) : running.length ? running : programs.filter((x) => x.status !== 'ended');
+  const sum = (k) => { const v = chosen.reduce((n, x) => n + (Number(x[k]) || 0), 0); return v || null; };
+  const goals = { pounds: sum('goal_pounds_week'), people: sum('goal_people_week'), runs: sum('goal_deliveries_week'), volunteers: sum('goal_volunteers_week') };
+
+  const bs = scopeSql('budget_lines', me);
+  const bw = [];
+  const bb = [];
+  if (bs) { bw.push(bs.sql); bb.push(...bs.binds); }
+  if (chosen.length) { bw.push(`bl.program_id IN (${chosen.map(() => '?').join(',')})`); bb.push(...chosen.map((x) => x.id)); }
+  else bw.push('0');
+  const budget = (await db.prepare(`SELECT COALESCE(bl.category, 'other') AS category, SUM(bl.estimated) AS estimated, SUM(bl.actual) AS actual, COUNT(*) AS n
+      FROM budget_lines bl WHERE ${bw.join(' AND ')} GROUP BY category ORDER BY estimated DESC`).bind(...bb).all()).results;
+
+  return json({
+    filter: { program_id: f.pid, from: f.from, to: f.to },
+    programs, totals, weekly, bySource, bySite, goals, budget, budget_total: sum('budget_total'),
+  });
+}
+
+// CSV of the delivery log for the same filters, for grant reports and spreadsheets.
+async function impactExport(params, db, me) {
+  const f = impactFilter(params, me);
+  const { results } = await db.prepare(`SELECT dv.*, p.name AS program_name, o.name AS site_name, ${MEALS_SQL} AS meals_total
+      ${FROM_DV} ${f.sql} ORDER BY dv.date, dv.id`).bind(...f.binds).all();
+  const cols = [
+    ['Date', (r) => r.date], ['Program', (r) => r.program_name], ['Picked up from', (r) => r.pickup_source],
+    ['Pounds', (r) => r.pounds], ['Boxes or items', (r) => r.items],
+    ['Meals', (r) => (r.meals_total == null ? null : Math.round(r.meals_total))], ['Meals estimated from pounds', (r) => (r.meals == null && r.meals_total != null ? 'yes' : '')],
+    ['People reached', (r) => r.people_reached], ['Drop-off site', (r) => r.site_name], ['Home deliveries', (r) => r.home_deliveries],
+    ['Volunteers', (r) => r.volunteers], ['Volunteer hours', (r) => r.volunteer_hours], ['Miles', (r) => r.miles], ['Cost ($)', (r) => r.cost],
+    ['Notes', (r) => r.notes],
+  ];
+  const cell = (v) => {
+    if (v == null) return '';
+    let s = String(v);
+    if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = "'" + s; // keep spreadsheets from running a cell as a formula
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [cols.map(([h]) => h).join(','), ...results.map((r) => cols.map(([, get]) => cell(get(r))).join(','))].join('\r\n') + '\r\n';
+  const name = `food-rescue-deliveries-${f.from || 'start'}-to-${f.to || new Date().toISOString().slice(0, 10)}.csv`;
+  return new Response(csv, { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': `attachment; filename="${name}"` } });
 }
 
 // ---- Geocoding (OpenStreetMap Nominatim, free; keep usage light) ----

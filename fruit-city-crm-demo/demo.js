@@ -4,7 +4,7 @@
 // the real CRM also uses. Reloading the page resets everything.
 (() => {
   const SQL_JS = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
-  const ME = { username: 'demo', role: 'admin' }; // the demo visitor is an admin so every screen is visible
+  const ME = { username: 'demo', role: 'admin', canReview: true }; // the demo visitor is an admin so every screen is visible
   const realFetch = window.fetch.bind(window);
   const files = new Map(); // attachment key -> Blob (stands in for the R2 bucket)
   const blobUrls = new Map();
