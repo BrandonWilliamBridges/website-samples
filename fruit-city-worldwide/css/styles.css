@@ -876,6 +876,82 @@ li { margin-bottom: 0.4rem; }
 
 .footer-bottom a { color: rgba(255,255,255,.55); text-decoration: underline; }
 
+/* Social links (filled by js/social.js) */
+.footer-social { margin-top: var(--space-sm); }
+.footer-social[hidden] { display: none; }
+.footer-social--row { margin: 0 0 var(--space-md); }
+
+.footer-social__label {
+  color: var(--gold);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+
+.footer-social__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
+.footer-social__list a {
+  color: rgba(255,255,255,.75);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-social__list a:hover,
+.footer-social__list a:focus { color: var(--white); }
+
+/* Links page (links.html) */
+.links-page {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.links-page h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+.links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.links-list__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--dark);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--dark);
+  text-decoration: none;
+  text-align: center;
+  transition: background var(--transition), color var(--transition);
+}
+
+.links-list__item:hover,
+.links-list__item:focus {
+  background: var(--dark);
+  color: var(--white);
+}
+
+.links-list__name { font-weight: 700; font-size: 1.05rem; }
+.links-list__sub { font-size: 0.85rem; opacity: .75; }
+
 /* ============================================================
    19. PAGE BANNER (inner pages)
    ============================================================ */
