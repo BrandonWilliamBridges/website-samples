@@ -14,7 +14,8 @@
   'use strict';
 
   var SOCIAL = [
-    { name: 'Instagram', handle: '@fruitcityglobal', url: 'https://www.instagram.com/fruitcityglobal/' }
+    { name: 'Instagram', handle: '@fruitcityglobal', url: 'https://www.instagram.com/fruitcityglobal/' },
+    { name: 'Pinterest', handle: '@fruitcityglobal', url: 'https://www.pinterest.com/fruitcityglobal/' }
   ];
 
   function render() {
