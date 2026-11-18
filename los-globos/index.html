@@ -9,6 +9,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Fredoka:wght@500;600;700&amp;family=Lexend:wght@400;500&amp;family=Space+Grotesk:wght@500;700&amp;family=IBM+Plex+Mono:wght@400;600&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&amp;family=Montserrat:wght@300;400;500&amp;family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,700&amp;family=Karla:wght@400;600;700&amp;family=Syne:wght@600;800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;family=Lilita+One&amp;family=Rubik:wght@400;500;700&amp;display=swap" rel="stylesheet">
 <style>
+/* shared: what the window signs say (inherits each look's colors and fonts) */
+.xw{padding:clamp(32px,6vw,64px) 16px}
+.xw-in{max-width:1080px;margin:0 auto;border:2px solid currentColor;border-radius:18px;padding:clamp(20px,4vw,36px);background:color-mix(in srgb,currentColor 5%,transparent)}
+.xw h2{margin:0 0 .3em;font-size:clamp(26px,4.4vw,40px);line-height:1.1}
+.xw-lead{margin:0 0 18px;opacity:.85;max-width:60ch}
+.xw-list{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:10px}
+.xw-list li{border:1.5px solid color-mix(in srgb,currentColor 35%,transparent);border-radius:12px;padding:12px 14px;font-size:17px;line-height:1.25}
+.xw-row{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between}
+.xw-row p{margin:0}
+.xw-call{font-weight:700;font-size:19px}
+.xw-call span{font-weight:400;font-size:16px}
+.xw a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.xw-small{margin:14px 0 0;font-size:14px;opacity:.75}
 *,*::before,*::after{box-sizing:border-box}
 :root{--sh-bg:#f5f2ee;--sh-fg:#1f1b24;--sh-mut:#675f6e;--sh-line:#e3dde3;--sh-acc:#d9466f;--sh-f:Manrope,system-ui,sans-serif;color-scheme:light}
 :root[data-lang="en"] .es{display:none!important}
@@ -692,6 +705,8 @@ a{color:inherit}
   .c-hero h1{text-shadow:3px 3px 0 var(--ink)}
 }
 @media (max-width:480px){.c-stk{grid-template-columns:1fr}}
+/* the bakery photos */
+.ph.has-img[data-slot="1"]{background-image:url("img/storefront.jpg");background-position:center 40%}.ph.has-img[data-slot="2"]{background-image:url("img/sign-bread.jpg");background-position:right center}.ph.has-img[data-slot="4"]{background-image:url("img/sign-cupcakes.jpg");background-position:right center}.ph.has-img[data-slot="5"]{background-image:url("img/sign-tresleches.jpg");background-position:right center}.ph.has-img[data-slot="6"]{background-image:url("img/window-signs.jpg");background-position:center 30%}
 </style>
 <script type="application/ld+json">[
  {
@@ -701,12 +716,14 @@ a{color:inherit}
   "telephone": "(832) 868-8903",
   "address": {
    "@type": "PostalAddress",
-   "streetAddress": "11902 Jones Rd",
+   "streetAddress": "11902 Jones Rd, Suite P",
    "addressLocality": "Houston",
    "addressRegion": "TX",
    "postalCode": "77070",
    "addressCountry": "US"
   },
+  "openingHours": ["Tu-Sa 11:00-19:00"],
+  "paymentAccepted": "Credit cards, PayPal",
   "areaServed": ["Houston", "Cypress"],
   "availableLanguage": ["English", "Spanish"]
  },
@@ -716,7 +733,9 @@ a{color:inherit}
   "mainEntity": [
    {"@type": "Question", "name": "Do you make custom cakes?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every cake is made to order. Bring a picture or tell us your theme."}},
    {"@type": "Question", "name": "Do you have tres leches?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Call and ask about sizes and flavors."}},
-   {"@type": "Question", "name": "Where are you?", "acceptedAnswer": {"@type": "Answer", "text": "11902 Jones Rd in Woodedge Plaza, Houston, TX 77070."}},
+   {"@type": "Question", "name": "Where are you?", "acceptedAnswer": {"@type": "Answer", "text": "11902 Jones Rd, Suite P, in Woodedge Plaza, Houston, TX 77070."}},
+   {"@type": "Question", "name": "When are you open?", "acceptedAnswer": {"@type": "Answer", "text": "Tuesday to Saturday, 11 AM to 7 PM. Closed Sunday and Monday."}},
+   {"@type": "Question", "name": "How do I order a custom cake?", "acceptedAnswer": {"@type": "Answer", "text": "Call the cake line at (281) 807-3757, or come by the bakery."}},
    {"@type": "Question", "name": "How far ahead should I order?", "acceptedAnswer": {"@type": "Answer", "text": "Call us with your date and we'll tell you."}}
   ]
  }
@@ -755,16 +774,17 @@ a{color:inherit}
       <ol>
         <li><span class="en">Choose <b>English</b> or <b>Español</b>. You can switch any time with <b>EN / ES</b> at the top. Every word on every design is in both languages.</span><span class="es">Elijan <b>English</b> o <b>Español</b>. Pueden cambiar cuando quieran con <b>EN / ES</b> arriba. Cada palabra de cada diseño está en los dos idiomas.</span></li>
         <li><span class="en">Open each of the <b>six designs</b> with the numbered tabs or the cards below. Each one is a complete website with its own look, and each has one special piece you can play with: balloons you can tap, a cake you can build, a wedding timeline, a tres leches explainer, a display case you can filter, and a birthday theme picker. Scroll all the way down on each.</span><span class="es">Abran cada uno de los <b>seis diseños</b> con las pestañas numeradas o las tarjetas de abajo. Cada uno es un sitio web completo con su propio estilo, y cada uno tiene una parte especial para jugar: globos que se pueden tocar, un pastel que se puede armar, un calendario para bodas, una explicación del tres leches, una vitrina con filtros y un selector de temas de cumpleaños. Bajen hasta el final en cada uno.</span></li>
-        <li><span class="en">The address, phone, opening time and Google rating come from your Google listing. We didn't know your closing time, so every design says "call for today's hours" until you tell us.</span><span class="es">La dirección, el teléfono, la hora de abrir y la calificación de Google vienen de su ficha de Google. No sabíamos a qué hora cierran, así que cada diseño dice "llama para el horario de hoy" hasta que nos digan.</span></li>
-        <li><span class="en">The cakes, flavors, colors and toppers are <b>samples</b>, and every price says "Ask". Quinceañera cakes are in there as an example too. Tell us your real cakes, flavors and prices and we'll put them in.</span><span class="es">Los pasteles, sabores, colores y decoraciones son <b>de muestra</b>, y cada precio dice "Pregunta". Los pasteles de quinceañera también están como ejemplo. Dígannos sus pasteles, sabores y precios reales y los ponemos.</span></li>
-        <li><span class="en">The striped boxes are where your photos go. Tap <b>Try your photos</b> to see pictures from your phone in all six designs. Nothing is uploaded; they stay on your phone. We can also come by and take them.</span><span class="es">Los cuadros con rayas son para sus fotos. Toquen <b>Prueba tus fotos</b> para ver fotos de su celular en los seis diseños. No se sube nada; se quedan en su celular. También podemos pasar a tomarlas.</span></li>
+        <li><span class="en">The hours, address and phone come from the sign on your door, and the Google rating from your Google listing. Your window signs show a second number, (281) 807-3757. We made the door number, (832) 868-8903, the main number and the window number the line for cake orders. If you'd rather have it another way, tell us and we'll switch it.</span><span class="es">El horario, la dirección y el teléfono vienen del letrero de su puerta, y la calificación de Google de su ficha de Google. Los letreros de su ventana tienen otro número, (281) 807-3757. Pusimos el número de la puerta, (832) 868-8903, como el principal y el de la ventana como la línea para pedidos de pasteles. Si lo prefieren de otra forma, nos dicen y lo cambiamos.</span></li>
+        <li><span class="en">Custom cakes, cupcakes, flan napolitano, pastries, fresh bread and tres leches are on your window signs, so every design lists them. The other cakes, flavors, colors and toppers are <b>samples</b>, and every price says "Ask". Quinceañera cakes are in there as an example too. Tell us your real cakes, flavors and prices and we'll put them in.</span><span class="es">Los pasteles personalizados, cupcakes, flan napolitano, repostería, pan fresco y tres leches están en los letreros de su ventana, así que cada diseño los muestra. Los demás pasteles, sabores, colores y decoraciones son <b>de muestra</b>, y cada precio dice "Pregunta". Los pasteles de quinceañera también están como ejemplo. Dígannos sus pasteles, sabores y precios reales y los ponemos.</span></li>
+        <li><span class="en">The photos of your storefront and window signs were taken outside the bakery. The cake pictures are from your signs, so we'd swap in photos of your real cakes. The striped boxes, like the wedding cake, are where more of your photos go. Tap <b>Try your photos</b> to see pictures from your phone in all six designs. Nothing is uploaded; they stay on your phone. We can also come by and take them.</span><span class="es">Las fotos de su local y de los letreros de la ventana se tomaron afuera de la pastelería. Las fotos de pasteles son de sus letreros, así que las cambiaríamos por fotos de sus pasteles reales. Los cuadros con rayas, como el del pastel de boda, son para más fotos suyas. Toquen <b>Prueba tus fotos</b> para ver fotos de su celular en los seis diseños. No se sube nada; se quedan en su celular. También podemos pasar a tomarlas.</span></li>
         <li><span class="en">The order forms and the cake builder don't send anything yet. On your real site, requests would come straight to your phone.</span><span class="es">Los formularios de pedido y el armador de pasteles todavía no envían nada. En su sitio real, los pedidos les llegarían directo al celular.</span></li>
+        <li><span class="en">Your door shows a Nextdoor 2024 Neighborhood Fave sticker and that you take cards and PayPal, so the designs mention both. There's also a Yelp woman-owned business sticker; tell us if you'd like that shown too.</span><span class="es">Su puerta tiene la calcomanía de Favorito del vecindario 2024 de Nextdoor y muestra que aceptan tarjetas y PayPal, así que los diseños mencionan las dos cosas. También tiene la calcomanía de Yelp de negocio de mujeres; nos dicen si quieren que la mostremos.</span></li>
         <li><span class="en">You don't have to pick just one. Tell us what you like from each and we'll combine them.</span><span class="es">No tienen que elegir solo uno. Dígannos qué les gusta de cada uno y los combinamos.</span></li>
       </ol>
       <div class="facts">
-        <div class="fact"><div class="k"><span class="en">Address</span><span class="es">Dirección</span></div><div class="v">11902 Jones Rd<small><span class="en">Woodedge Plaza, Houston, TX 77070</span><span class="es">Woodedge Plaza, Houston, TX 77070</span></small></div></div>
-        <div class="fact"><div class="k"><span class="en">Phone</span><span class="es">Teléfono</span></div><div class="v">(832) 868-8903<small><span class="en">On every design</span><span class="es">En cada diseño</span></small></div></div>
-        <div class="fact"><div class="k"><span class="en">Hours</span><span class="es">Horario</span></div><div class="v"><span class="en">Opens 11 AM</span><span class="es">Abre 11 AM</span><small><span class="en">Closing time to confirm</span><span class="es">Hora de cerrar por confirmar</span></small></div></div>
+        <div class="fact"><div class="k"><span class="en">Address</span><span class="es">Dirección</span></div><div class="v">11902 Jones Rd, Suite P<small><span class="en">Woodedge Plaza, Houston, TX 77070</span><span class="es">Woodedge Plaza, Houston, TX 77070</span></small></div></div>
+        <div class="fact"><div class="k"><span class="en">Phone</span><span class="es">Teléfono</span></div><div class="v">(832) 868-8903<small><span class="en">Cake orders: (281) 807-3757</span><span class="es">Pedidos de pasteles: (281) 807-3757</span></small></div></div>
+        <div class="fact"><div class="k"><span class="en">Hours</span><span class="es">Horario</span></div><div class="v"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span><small><span class="en">Closed Sunday and Monday</span><span class="es">Cerrado domingo y lunes</span></small></div></div>
         <div class="fact"><div class="k">Google</div><div class="v">★ 4.4<small><span class="en">91 reviews</span><span class="es">91 reseñas</span></small></div></div>
       </div>
       <form class="notes" id="notesForm" novalidate>
@@ -827,7 +847,7 @@ a{color:inherit}
       <p class="g-sub"><span class="en">Birthday cakes, wedding cakes and tres leches, all made to order. Bring us your inspiration picture and we'll bake your cake to match it, right here in Woodedge Plaza on Jones Road.</span><span class="es">Pasteles de cumpleaños, de boda y de tres leches, todos por encargo. Tráenos tu foto de inspiración y hacemos tu pastel igualito, aquí en Woodedge Plaza sobre Jones Road.</span></p>
       <div class="g-cta"><a class="g-b1" href="#globos-pick" data-scroll><span class="en">Pick a balloon</span><span class="es">Elige un globo</span></a><a class="g-b2" href="tel:+18328688903"><span class="en">Call</span><span class="es">Llama al</span> (832) 868-8903</a></div>
       <ul class="g-chips">
-        <li><span class="en">Opens 11 AM</span><span class="es">Abre 11 AM</span></li>
+        <li><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span></li>
         <li><span class="en">In Woodedge Plaza</span><span class="es">En Woodedge Plaza</span></li>
         <li>★ 4.4 <span class="en">on Google · 91 reviews</span><span class="es">en Google · 91 reseñas</span></li>
       </ul>
@@ -864,7 +884,7 @@ a{color:inherit}
       </div>
       <div class="g-panels">
         <article class="g-panel" id="g-p1" style="--c:#ff6b6b">
-          <div class="ph" data-slot="4"></div>
+          <div class="ph has-img" data-slot="4"></div>
           <div><span class="g-pk"><span class="en">Balloon 1 · Birthday</span><span class="es">Globo 1 · Cumpleaños</span></span><h3><span class="en">Birthday cakes</span><span class="es">Pasteles de cumpleaños</span></h3><p><span class="en">First birthday or fiftieth, we make it look like the party. Tell us the name, the age, the colors and the theme, and how many people are coming.</span><span class="es">Primer cumpleaños o el número cincuenta, lo hacemos con la cara de la fiesta. Dinos el nombre, la edad, los colores, el tema y cuántas personas van.</span></p><p class="g-price"><span class="en">Price</span><span class="es">Precio</span> <b><span class="en">Ask</span><span class="es">Pregunta</span></b></p><a href="#globos-order" data-scroll><span class="en">Ask for this cake</span><span class="es">Pide este pastel</span> →</a></div>
         </article>
         <article class="g-panel" id="g-p2" style="--c:#9b7bff">
@@ -872,15 +892,15 @@ a{color:inherit}
           <div><span class="g-pk"><span class="en">Balloon 2 · Wedding</span><span class="es">Globo 2 · Boda</span></span><h3><span class="en">Wedding cakes</span><span class="es">Pasteles de boda</span></h3><p><span class="en">Tiered cakes decorated in your wedding colors. Bring your ideas and your pictures, and we'll plan the cake together, from the size to the last detail on top.</span><span class="es">Pasteles de pisos decorados con los colores de tu boda. Trae tus ideas y tus fotos y planeamos el pastel juntos, desde el tamaño hasta el último detalle de arriba.</span></p><p class="g-price"><span class="en">Price</span><span class="es">Precio</span> <b><span class="en">Ask</span><span class="es">Pregunta</span></b></p><a href="#globos-order" data-scroll><span class="en">Ask for this cake</span><span class="es">Pide este pastel</span> →</a></div>
         </article>
         <article class="g-panel" id="g-p3" style="--c:#ffc53d">
-          <div class="ph" data-slot="5"></div>
+          <div class="ph has-img" data-slot="5"></div>
           <div><span class="g-pk"><span class="en">Balloon 3 · Tres leches</span><span class="es">Globo 3 · Tres leches</span></span><h3>Tres leches</h3><p><span class="en">Soft sponge cake soaked in three kinds of milk. It's the cake our customers bring up in several of their Google reviews. Ask what sizes and flavors we have.</span><span class="es">Bizcocho suave remojado en tres tipos de leche. Es el pastel que nuestros clientes mencionan en varias de sus reseñas de Google. Pregunta qué tamaños y sabores tenemos.</span></p><p class="g-price"><span class="en">Price</span><span class="es">Precio</span> <b><span class="en">Ask</span><span class="es">Pregunta</span></b></p><a href="#globos-order" data-scroll><span class="en">Ask for this cake</span><span class="es">Pide este pastel</span> →</a></div>
         </article>
         <article class="g-panel" id="g-p4" style="--c:#37c8a0">
-          <div class="ph" data-slot="1"></div>
+          <div class="ph has-img" data-slot="1"></div>
           <div><span class="g-pk"><span class="en">Balloon 4 · Sample item</span><span class="es">Globo 4 · Ejemplo de muestra</span></span><h3><span class="en">Quinceañera cakes</span><span class="es">Pasteles de quinceañera</span></h3><p><span class="en">For fifteen years, a cake as big as the celebration. Tell us her colors and the style of the party, and bring the dress or decoration pictures you already have.</span><span class="es">Para los quince años, un pastel tan grande como la celebración. Dinos sus colores y el estilo de la fiesta, y trae las fotos del vestido o de la decoración que ya tengas.</span></p><p class="g-price"><span class="en">Price</span><span class="es">Precio</span> <b><span class="en">Ask</span><span class="es">Pregunta</span></b></p><a href="#globos-order" data-scroll><span class="en">Ask for this cake</span><span class="es">Pide este pastel</span> →</a></div>
         </article>
         <article class="g-panel" id="g-p5" style="--c:#3fa9f5">
-          <div class="ph" data-slot="2"></div>
+          <div class="ph has-img" data-slot="2"></div>
           <div><span class="g-pk"><span class="en">Balloon 5 · Your idea</span><span class="es">Globo 5 · Tu idea</span></span><h3><span class="en">Your inspiration picture</span><span class="es">Tu foto de inspiración</span></h3><p><span class="en">Saw a cake you love online, at a party or in a magazine? Show us the picture. We'll use it as our guide and make yours look like it.</span><span class="es">¿Viste un pastel que te encantó en internet, en una fiesta o en una revista? Enséñanos la foto. La usamos de guía y hacemos el tuyo igualito.</span></p><p class="g-price"><span class="en">Price</span><span class="es">Precio</span> <b><span class="en">Ask</span><span class="es">Pregunta</span></b></p><a href="#globos-order" data-scroll><span class="en">Ask for this cake</span><span class="es">Pide este pastel</span> →</a></div>
         </article>
       </div>
@@ -894,7 +914,7 @@ a{color:inherit}
       </div>
       <div class="g-copy">
         <p><span class="en">At Los Globos, cakes are made to order. That means yours starts with a conversation: who it's for, how many people are coming, what colors you love and what flavor makes everybody happy.</span><span class="es">En Los Globos, los pasteles se hacen por encargo. O sea, el tuyo empieza con una plática: para quién es, cuántas personas van, qué colores te gustan y qué sabor pone feliz a todos.</span></p>
-        <p><span class="en">Show us a picture from your phone, a party you went to or a page you saved, and we'll use it as our guide. We're in Woodedge Plaza on Jones Road, in northwest Houston near Cypress. Come by after 11 AM, or call first and tell us what you're dreaming up.</span><span class="es">Enséñanos una foto de tu celular, de una fiesta a la que fuiste o de una página que guardaste, y la usamos de guía. Estamos en Woodedge Plaza sobre Jones Road, en el noroeste de Houston, cerca de Cypress. Pasa después de las 11 AM, o llama primero y cuéntanos qué te imaginas.</span></p>
+        <p><span class="en">Show us a picture from your phone, a party you went to or a page you saved, and we'll use it as our guide. We're in Woodedge Plaza on Jones Road, in northwest Houston near Cypress. Come by Tuesday to Saturday, 11 AM to 7 PM, or call first and tell us what you're dreaming up.</span><span class="es">Enséñanos una foto de tu celular, de una fiesta a la que fuiste o de una página que guardaste, y la usamos de guía. Estamos en Woodedge Plaza sobre Jones Road, en el noroeste de Houston, cerca de Cypress. Pasa de martes a sábado, de 11 AM a 7 PM, o llama primero y cuéntanos qué te imaginas.</span></p>
         <ul class="g-tags"><li><span class="en">Made to order</span><span class="es">Por encargo</span></li><li><span class="en">Your picture, your cake</span><span class="es">Tu foto, tu pastel</span></li><li><span class="en">English y español</span><span class="es">English y español</span></li></ul>
       </div>
     </div>
@@ -904,7 +924,7 @@ a{color:inherit}
     <div class="in">
       <h2><span class="en">How to order</span><span class="es">Cómo encargar</span></h2>
       <ol class="g-steps">
-        <li><b>1</b><h3><span class="en">Call or come by</span><span class="es">Llama o ven</span></h3><p><span class="en">Call (832) 868-8903 or stop by the bakery. Tell us your party date and how many people.</span><span class="es">Llama al (832) 868-8903 o pasa a la pastelería. Dinos la fecha de tu fiesta y para cuántas personas.</span></p></li>
+        <li><b>1</b><h3><span class="en">Call or come by</span><span class="es">Llama o ven</span></h3><p><span class="en">Call the cake line, (281) 807-3757, or stop by the bakery. Tell us your party date and how many people.</span><span class="es">Llama a la línea de pasteles, (281) 807-3757, o pasa a la pastelería. Dinos la fecha de tu fiesta y para cuántas personas.</span></p></li>
         <li><b>2</b><h3><span class="en">Show us your picture</span><span class="es">Enséñanos tu foto</span></h3><p><span class="en">Bring the cake picture that inspired you, or describe the theme, colors and flavor.</span><span class="es">Trae la foto del pastel que te inspiró, o descríbenos el tema, los colores y el sabor.</span></p></li>
         <li><b>3</b><h3><span class="en">Pick up and party</span><span class="es">Recoge y a festejar</span></h3><p><span class="en">We'll agree on the day together. Pick up your cake in Woodedge Plaza and go celebrate.</span><span class="es">Quedamos juntos en el día. Recoge tu pastel en Woodedge Plaza y a celebrar.</span></p></li>
       </ol>
@@ -915,15 +935,34 @@ a{color:inherit}
     <div class="in">
       <h2><span class="en">Straight from our kitchen</span><span class="es">Recién salidos de la cocina</span></h2>
       <div class="g-blobs">
-        <div class="ph rl b1" data-slot="4"></div>
+        <div class="ph has-img rl b1" data-slot="4"></div>
         <div class="ph rl b2" data-slot="3"></div>
-        <div class="ph rl b3" data-slot="5"></div>
-        <div class="ph rl b4" data-slot="2"></div>
-        <div class="ph rl b5" data-slot="6"></div>
+        <div class="ph has-img rl b3" data-slot="5"></div>
+        <div class="ph has-img rl b4" data-slot="2"></div>
+        <div class="ph has-img rl b5" data-slot="6"></div>
       </div>
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-g">
+    <div class="xw-in">
+      <h2 id="xw-g"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="g-order" id="globos-order">
     <div class="in two">
       <form class="frm g-form" data-form novalidate>
@@ -938,7 +977,7 @@ a{color:inherit}
         <p class="fst" aria-live="polite"></p>
       </form>
       <div class="g-side">
-        <div class="ph" data-slot="1"></div>
+        <div class="ph has-img" data-slot="1"></div>
         <p><span class="en">Got a picture? Bring it when you come by, or show it to us when you call back.</span><span class="es">¿Tienes una foto? Tráela cuando vengas, o enséñanosla cuando te llamemos.</span></p>
       </div>
     </div>
@@ -950,8 +989,8 @@ a{color:inherit}
         <svg viewBox="0 0 220 160" aria-hidden="true"><rect x="10" y="88" width="200" height="56" rx="6" fill="#fff" stroke="#22305e" stroke-width="2"/><g fill="#bfe7ff" stroke="#22305e" stroke-width="2"><rect x="24" y="102" width="34" height="42"/><rect x="72" y="102" width="34" height="42"/><rect x="120" y="102" width="34" height="42"/><rect x="168" y="102" width="30" height="42"/></g><rect x="10" y="80" width="200" height="12" fill="#ff6b6b" stroke="#22305e" stroke-width="2"/><path d="M137 56q-8 14 0 24" stroke="#22305e" fill="none" stroke-width="1.5"/><path d="M137 8c13 0 21 10 21 22 0 14-11 24-21 25-10-1-21-11-21-25 0-12 8-22 21-22z" fill="#ffc53d" stroke="#22305e" stroke-width="2"/></svg>
       </div>
       <div class="g-vgrid">
-        <div><h3><span class="en">Where we are</span><span class="es">Dónde estamos</span></h3><p>11902 Jones Rd<br>Houston, TX 77070<br><span class="en">In Woodedge Plaza</span><span class="es">En Woodedge Plaza</span></p><p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> →</a></p></div>
-        <div><h3><span class="en">Hours</span><span class="es">Horario</span></h3><p><span class="en">Opens at 11 AM.</span><span class="es">Abre a las 11 AM.</span><br><span class="en">Call for today's hours.</span><span class="es">Llama para el horario de hoy.</span></p></div>
+        <div><h3><span class="en">Where we are</span><span class="es">Dónde estamos</span></h3><p>11902 Jones Rd, Suite P<br>Houston, TX 77070<br><span class="en">In Woodedge Plaza</span><span class="es">En Woodedge Plaza</span></p><p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> →</a></p></div>
+        <div><h3><span class="en">Hours</span><span class="es">Horario</span></h3><p><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></p></div>
         <div><h3><span class="en">Call us</span><span class="es">Llámanos</span></h3><p><a href="tel:+18328688903">(832) 868-8903</a></p><p class="g-rate">★ 4.4 <span class="en">on Google from 91 reviews</span><span class="es">en Google, de 91 reseñas</span></p></div>
       </div>
     </div>
@@ -970,7 +1009,7 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="g-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="g-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 </section>
 
 <!-- ======================= 2 · EL TALLER ======================= -->
@@ -992,8 +1031,8 @@ a{color:inherit}
         <div class="t-th"><span class="en">WORK ORDER</span><span class="es">ORDEN DE TRABAJO</span><span><span class="en">sample</span><span class="es">muestra</span></span></div>
         <dl>
           <div><dt><span class="en">Shop</span><span class="es">Taller</span></dt><dd>Los Globos Bakery</dd></div>
-          <div><dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd · Woodedge Plaza</dd></div>
-          <div><dt><span class="en">Opens</span><span class="es">Abre</span></dt><dd>11 AM · <span class="en">call for today's hours</span><span class="es">llama para el horario de hoy</span></dd></div>
+          <div><dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd, Suite P · Woodedge Plaza</dd></div>
+          <div><dt><span class="en">Open</span><span class="es">Abierto</span></dt><dd><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span></dd></div>
           <div><dt><span class="en">Phone</span><span class="es">Teléfono</span></dt><dd><a href="tel:+18328688903">(832) 868-8903</a></dd></div>
           <div><dt>Google</dt><dd>★ 4.4 · <span class="en">91 reviews</span><span class="es">91 reseñas</span></dd></div>
         </dl>
@@ -1064,7 +1103,7 @@ a{color:inherit}
       <div class="t-head"><h2><span class="t-n">02</span><span class="en">How the workshop works</span><span class="es">Cómo funciona el taller</span></h2></div>
       <ol class="t-rows">
         <li><span>01</span><h3><span class="en">Sketch it, or bring a picture</span><span class="es">Ármalo, o trae una foto</span></h3><p><span class="en">Use the builder above, or skip it and bring the inspiration picture you already love. Both work.</span><span class="es">Usa el armador de arriba, o sáltatelo y trae la foto de inspiración que ya te encanta. Las dos cosas funcionan.</span></p></li>
-        <li><span>02</span><h3><span class="en">Send it with your date</span><span class="es">Mándalo con tu fecha</span></h3><p><span class="en">Fill in the form below or call (832) 868-8903. Tell us the date and how many people.</span><span class="es">Llena el formulario de abajo o llama al (832) 868-8903. Dinos la fecha y para cuántas personas.</span></p></li>
+        <li><span>02</span><h3><span class="en">Send it with your date</span><span class="es">Mándalo con tu fecha</span></h3><p><span class="en">Fill in the form below or call the cake line, (281) 807-3757. Tell us the date and how many people.</span><span class="es">Llena el formulario de abajo o llama a la línea de pasteles, (281) 807-3757. Dinos la fecha y para cuántas personas.</span></p></li>
         <li><span>03</span><h3><span class="en">We go over the details</span><span class="es">Revisamos los detalles</span></h3><p><span class="en">We call you back to talk through size, design and price, and anything the builder can't show.</span><span class="es">Te llamamos para platicar del tamaño, el diseño y el precio, y de todo lo que el armador no puede enseñar.</span></p></li>
         <li><span>04</span><h3><span class="en">Pick it up</span><span class="es">Recógelo</span></h3><p><span class="en">On the day we agree on, pick up your cake at Woodedge Plaza on Jones Road.</span><span class="es">El día que quedemos, recoge tu pastel en Woodedge Plaza sobre Jones Road.</span></p></li>
       </ol>
@@ -1088,20 +1127,39 @@ a{color:inherit}
         </table>
       </div>
       <div class="t-pins">
-        <div class="t-pin p1"><div class="ph" data-slot="4"></div></div>
+        <div class="t-pin p1"><div class="ph has-img" data-slot="4"></div></div>
         <div class="t-pin p2"><div class="ph" data-slot="3"></div></div>
-        <div class="t-pin p3"><div class="ph" data-slot="5"></div></div>
-        <div class="t-pin p4"><div class="ph" data-slot="6"></div></div>
+        <div class="t-pin p3"><div class="ph has-img" data-slot="5"></div></div>
+        <div class="t-pin p4"><div class="ph has-img" data-slot="6"></div></div>
       </div>
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-t">
+    <div class="xw-in">
+      <h2 id="xw-t"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="t-order" id="taller-order">
     <div class="in two">
       <div class="t-ocopy">
         <div class="t-head"><h2><span class="t-n">04</span><span class="en">Send your build</span><span class="es">Manda tu pastel</span></h2></div>
         <p><span class="en">Your workshop choices are already filled in. Add your name, phone and date, and anything the builder couldn't show: a theme, a name to write, a picture you'll bring.</span><span class="es">Lo que elegiste en el taller ya está escrito. Agrega tu nombre, teléfono y fecha, y lo que el armador no pudo enseñar: un tema, un nombre para escribir, una foto que vas a traer.</span></p>
-        <div class="ph" data-slot="1"></div>
+        <div class="ph has-img" data-slot="1"></div>
       </div>
       <form class="frm t-form" data-form novalidate>
         <label><span class="en">From the workshop</span><span class="es">Del taller</span><textarea name="build" id="t-build" rows="3" readonly></textarea></label>
@@ -1121,8 +1179,8 @@ a{color:inherit}
       <div class="t-visit">
         <div class="t-head"><h2><span class="t-n">05</span><span class="en">Find the shop</span><span class="es">Encuentra el taller</span></h2></div>
         <dl>
-          <div><dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd, Houston, TX 77070<br><span class="en">In Woodedge Plaza</span><span class="es">En Woodedge Plaza</span><br><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> ↗</a></dd></div>
-          <div><dt><span class="en">Hours</span><span class="es">Horario</span></dt><dd><span class="en">Opens at 11 AM. Call for today's hours.</span><span class="es">Abre a las 11 AM. Llama para el horario de hoy.</span></dd></div>
+          <div><dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd, Suite P, Houston, TX 77070<br><span class="en">In Woodedge Plaza</span><span class="es">En Woodedge Plaza</span><br><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> ↗</a></dd></div>
+          <div><dt><span class="en">Hours</span><span class="es">Horario</span></dt><dd><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></dd></div>
           <div><dt><span class="en">Phone</span><span class="es">Teléfono</span></dt><dd><a href="tel:+18328688903">(832) 868-8903</a></dd></div>
         </dl>
       </div>
@@ -1138,7 +1196,7 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="t-foot"><div class="in"><span class="t-mono">Los Globos Bakery · 11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a></span><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="t-foot"><div class="in"><span class="t-mono">Los Globos Bakery · 11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a></span><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 </section>
 
 <!-- ======================= 3 · BODA ======================= -->
@@ -1193,7 +1251,7 @@ a{color:inherit}
       <h2><span class="en">From the first call to the day</span><span class="es">De la primera llamada al gran día</span></h2>
       <p class="b-note"><span class="en">Sample steps: we'll match them to how you really plan a wedding cake.</span><span class="es">Pasos de muestra: los ajustaremos a como ustedes planean un pastel de boda.</span></p>
       <ol class="b-line">
-        <li><span class="b-num">I</span><div><h3><span class="en">The first call</span><span class="es">La primera llamada</span></h3><p><span class="en">Call (832) 868-8903 with your date, your guest count and the style you imagine. We'll tell you what's possible for your date.</span><span class="es">Llama al (832) 868-8903 con tu fecha, el número de invitados y el estilo que imaginas. Te decimos qué se puede hacer para tu fecha.</span></p></div></li>
+        <li><span class="b-num">I</span><div><h3><span class="en">The first call</span><span class="es">La primera llamada</span></h3><p><span class="en">Call the cake line, (281) 807-3757, with your date, your guest count and the style you imagine. We'll tell you what's possible for your date.</span><span class="es">Llama a la línea de pasteles, (281) 807-3757, con tu fecha, el número de invitados y el estilo que imaginas. Te decimos qué se puede hacer para tu fecha.</span></p></div></li>
         <li><span class="b-num">II</span><div><h3><span class="en">The tasting</span><span class="es">La prueba de sabores</span></h3><p><span class="en">Ask us about trying flavors before you decide, so the inside is as right as the outside.</span><span class="es">Pregúntanos por probar sabores antes de decidir, para que el pastel sea tan bueno por dentro como por fuera.</span></p></div></li>
         <li><span class="b-num">III</span><div><h3><span class="en">The design</span><span class="es">El diseño</span></h3><p><span class="en">Together we settle the tiers, the flavors, the colors and the details on top, using your inspiration pictures as the guide.</span><span class="es">Juntos decidimos los pisos, los sabores, los colores y los detalles de arriba, con tus fotos de inspiración como guía.</span></p></div></li>
         <li><span class="b-num">IV</span><div><h3><span class="en">The day</span><span class="es">El gran día</span></h3><p><span class="en">Your cake is ready on the date we agreed. We'll go over pickup together, so the only thing left to do is cut it.</span><span class="es">Tu pastel está listo en la fecha que quedamos. Repasamos juntos cómo recogerlo, para que lo único que falte sea cortarlo.</span></p></div></li>
@@ -1202,9 +1260,9 @@ a{color:inherit}
   </section>
 
   <section class="b-trip" aria-label="Photos / Fotos">
-    <div class="ph t1" data-slot="6"></div>
+    <div class="ph has-img t1" data-slot="6"></div>
     <div class="ph rl t2" data-slot="3"></div>
-    <div class="ph t3" data-slot="1"></div>
+    <div class="ph has-img t3" data-slot="1"></div>
   </section>
 
   <section class="b-menu">
@@ -1235,6 +1293,25 @@ a{color:inherit}
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-b">
+    <div class="xw-in">
+      <h2 id="xw-b"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="b-inq" id="boda-inquire">
     <div class="in b-inqg">
       <div class="b-copy">
@@ -1261,8 +1338,8 @@ a{color:inherit}
       <div class="b-frame">
         <p class="b-cap"><span class="en">Visit</span><span class="es">Visítanos</span></p>
         <div class="b-vg">
-          <div><h3><span class="en">The bakery</span><span class="es">La pastelería</span></h3><p>11902 Jones Rd<br>Houston, TX 77070<br><span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Directions</span><span class="es">Cómo llegar</span></a></div>
-          <div><h3><span class="en">Hours</span><span class="es">Horario</span></h3><p><span class="en">Opens at 11 AM.<br>Call for today's hours.</span><span class="es">Abre a las 11 AM.<br>Llama para el horario de hoy.</span></p></div>
+          <div><h3><span class="en">The bakery</span><span class="es">La pastelería</span></h3><p>11902 Jones Rd, Suite P<br>Houston, TX 77070<br><span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Directions</span><span class="es">Cómo llegar</span></a></div>
+          <div><h3><span class="en">Hours</span><span class="es">Horario</span></h3><p><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></p></div>
           <div><h3><span class="en">Telephone</span><span class="es">Teléfono</span></h3><p><a href="tel:+18328688903">(832) 868-8903</a></p></div>
         </div>
       </div>
@@ -1281,7 +1358,7 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="b-foot"><div class="in"><span class="b-cap">Los Globos Bakery</span><p>11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a></p><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="b-foot"><div class="in"><span class="b-cap">Los Globos Bakery</span><p>11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a></p><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 </section>
 
 <!-- ======================= 4 · TRES LECHES ======================= -->
@@ -1298,9 +1375,9 @@ a{color:inherit}
         <h1><span class="en">Soaked, soft<br><em>and made to order.</em></span><span class="es">Remojado, suavecito<br><em>y por encargo.</em></span></h1>
         <p class="l-sub"><span class="en">The tres leches that comes up in several of our Google reviews, plus birthday and wedding cakes made from your inspiration picture. All made to order in northwest Houston.</span><span class="es">El tres leches que sale en varias de nuestras reseñas de Google, más pasteles de cumpleaños y de boda hechos a partir de tu foto de inspiración. Todo por encargo en el noroeste de Houston.</span></p>
         <div class="l-cta"><a class="l-b1" href="#tl-order" data-scroll><span class="en">Order a tres leches</span><span class="es">Encarga un tres leches</span></a><a class="l-b2" href="tel:+18328688903">(832) 868-8903</a></div>
-        <p class="l-rate"><b>★ 4.4</b> <span class="en">on Google · 91 reviews · opens 11 AM</span><span class="es">en Google · 91 reseñas · abre 11 AM</span></p>
+        <p class="l-rate"><b>★ 4.4</b> <span class="en">on Google · 91 reviews · Tue–Sat 11–7</span><span class="es">en Google · 91 reseñas · mar–sáb 11–7</span></p>
       </div>
-      <div class="l-bowl"><div class="ph rl" data-slot="5"></div><span class="l-badge" aria-hidden="true"><b>3</b>leches</span></div>
+      <div class="l-bowl"><div class="ph has-img rl" data-slot="5"></div><span class="l-badge" aria-hidden="true"><b>3</b>leches</span></div>
     </div>
   </header>
   <div class="l-drip" style="background:#f6e7cc" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="none"><path d="M0 0V14L30 14Q38 14 38 22L38 23A13 13 0 0 0 64 23L64 22Q64 14 72 14L162 14Q170 14 170 22L170 19A9 9 0 0 0 188 19L188 22Q188 14 196 14L216 14Q224 14 224 22L224 53A13 13 0 0 0 250 53L250 22Q250 14 258 14L278 14Q286 14 286 22L286 18A18 18 0 0 0 322 18L322 22Q322 14 330 14L350 14Q358 14 358 22L358 45A9 9 0 0 0 376 45L376 22Q376 14 384 14L474 14Q482 14 482 22L482 27A9 9 0 0 0 500 27L500 22Q500 14 508 14L528 14Q536 14 536 22L536 36A18 18 0 0 0 572 36L572 22Q572 14 580 14L600 14Q608 14 608 22L608 10A18 18 0 0 0 644 10L644 22Q644 14 652 14L692 14Q700 14 700 22L700 10A18 18 0 0 0 736 10L736 22Q736 14 744 14L834 14Q842 14 842 22L842 27A9 9 0 0 0 860 27L860 22Q860 14 868 14L888 14Q896 14 896 22L896 18A18 18 0 0 0 932 18L932 22Q932 14 940 14L1000 14Q1008 14 1008 22L1008 21A15 15 0 0 0 1038 21L1038 22Q1038 14 1046 14L1066 14Q1074 14 1074 22L1074 26A18 18 0 0 0 1110 26L1110 22Q1110 14 1118 14L1158 14Q1166 14 1166 22L1166 57A9 9 0 0 0 1184 57L1184 22Q1184 14 1192 14L1200 14V0Z" fill="#c47a2c"/></svg></div>
@@ -1348,10 +1425,10 @@ a{color:inherit}
       <h2><span class="en">Pick your tres leches</span><span class="es">Escoge tu tres leches</span></h2>
       <p class="l-note"><span class="en">Sample flavors: we'll put in your real flavors, sizes and prices.</span><span class="es">Sabores de muestra: pondremos sus sabores, tamaños y precios reales.</span></p>
       <div class="l-cards">
-        <article class="l-card" style="--c:#f3d9a8"><div class="ph" data-slot="5"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Classic</span><span class="es">Clásico</span></h3><p><span class="en">The original: three milks, nothing else to distract you.</span><span class="es">El original: tres leches y nada más que te distraiga.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
-        <article class="l-card" style="--c:#8a5a3b"><div class="ph" data-slot="2"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Chocolate</span><span class="es">Chocolate</span></h3><p><span class="en">A chocolate sponge, soaked the same way.</span><span class="es">Un bizcocho de chocolate, remojado igual.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
-        <article class="l-card" style="--c:#f2a7a0"><div class="ph" data-slot="4"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Strawberry</span><span class="es">Fresa</span></h3><p><span class="en">Strawberries on top for a fresh, pink finish.</span><span class="es">Fresas encima para un final fresco y rosita.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
-        <article class="l-card" style="--c:#c9a27a"><div class="ph" data-slot="6"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Café</span><span class="es">Café</span></h3><p><span class="en">A little coffee in the soak, for grown-up parties.</span><span class="es">Un poco de café en el remojo, para fiestas de grandes.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
+        <article class="l-card" style="--c:#f3d9a8"><div class="ph has-img" data-slot="5"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Classic</span><span class="es">Clásico</span></h3><p><span class="en">The original: three milks, nothing else to distract you.</span><span class="es">El original: tres leches y nada más que te distraiga.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
+        <article class="l-card" style="--c:#8a5a3b"><div class="ph has-img" data-slot="2"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Chocolate</span><span class="es">Chocolate</span></h3><p><span class="en">A chocolate sponge, soaked the same way.</span><span class="es">Un bizcocho de chocolate, remojado igual.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
+        <article class="l-card" style="--c:#f2a7a0"><div class="ph has-img" data-slot="4"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Strawberry</span><span class="es">Fresa</span></h3><p><span class="en">Strawberries on top for a fresh, pink finish.</span><span class="es">Fresas encima para un final fresco y rosita.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
+        <article class="l-card" style="--c:#c9a27a"><div class="ph has-img" data-slot="6"></div><div class="l-cb"><span><span class="en">Sample flavor</span><span class="es">Sabor de muestra</span></span><h3><span class="en">Café</span><span class="es">Café</span></h3><p><span class="en">A little coffee in the soak, for grown-up parties.</span><span class="es">Un poco de café en el remojo, para fiestas de grandes.</span></p><em><span class="en">Price: Ask</span><span class="es">Precio: Pregunta</span></em></div></article>
       </div>
     </div>
   </section>
@@ -1370,7 +1447,7 @@ a{color:inherit}
           <li><span><span class="en">From your picture</span><span class="es">Como tu foto</span><small><span class="en">Show us, we'll bake it</span><span class="es">Enséñanos y lo horneamos</span></small></span><em><span class="en">Ask</span><span class="es">Pregunta</span></em></li>
         </ul>
       </div>
-      <div class="l-stack"><div class="ph s1" data-slot="3"></div><div class="ph rl s2" data-slot="4"></div></div>
+      <div class="l-stack"><div class="ph s1" data-slot="3"></div><div class="ph has-img rl s2" data-slot="4"></div></div>
     </div>
   </section>
   <div class="l-drip" style="background:#f6e7cc" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="none"><path d="M0 0V14L30 14Q38 14 38 22L38 26A18 18 0 0 0 74 26L74 22Q74 14 82 14L122 14Q130 14 130 22L130 60A18 18 0 0 0 166 60L166 22Q166 14 174 14L234 14Q242 14 242 22L242 18A18 18 0 0 0 278 18L278 22Q278 14 286 14L376 14Q384 14 384 22L384 25A11 11 0 0 0 406 25L406 22Q406 14 414 14L434 14Q442 14 442 22L442 63A15 15 0 0 0 472 63L472 22Q472 14 480 14L520 14Q528 14 528 22L528 55A11 11 0 0 0 550 55L550 22Q550 14 558 14L598 14Q606 14 606 22L606 21A15 15 0 0 0 636 21L636 22Q636 14 644 14L664 14Q672 14 672 22L672 45A9 9 0 0 0 690 45L690 22Q690 14 698 14L718 14Q726 14 726 22L726 43A11 11 0 0 0 748 43L748 22Q748 14 756 14L796 14Q804 14 804 22L804 17A11 11 0 0 0 826 17L826 22Q826 14 834 14L894 14Q902 14 902 22L902 65A13 13 0 0 0 928 65L928 22Q928 14 936 14L996 14Q1004 14 1004 22L1004 27A9 9 0 0 0 1022 27L1022 22Q1022 14 1030 14L1090 14Q1098 14 1098 22L1098 65A13 13 0 0 0 1124 65L1124 22Q1124 14 1132 14L1152 14Q1160 14 1160 22L1160 26A18 18 0 0 0 1196 26L1196 22Q1196 14 1204 14L1200 14V0Z" fill="#5a3418"/></svg></div>
@@ -1380,7 +1457,7 @@ a{color:inherit}
       <div class="l-recipe">
         <p class="l-kick"><span class="en">The recipe for ordering</span><span class="es">La receta para encargar</span></p>
         <ol>
-          <li><b>1</b><div><h3><span class="en">Call or stop by</span><span class="es">Llama o pasa</span></h3><p><span class="en">(832) 868-8903, or come to Woodedge Plaza after 11 AM.</span><span class="es">(832) 868-8903, o ven a Woodedge Plaza después de las 11 AM.</span></p></div></li>
+          <li><b>1</b><div><h3><span class="en">Call or stop by</span><span class="es">Llama o pasa</span></h3><p><span class="en">Call the cake line, (281) 807-3757, or come to Woodedge Plaza Tuesday to Saturday, 11 AM to 7 PM.</span><span class="es">Llama a la línea de pasteles, (281) 807-3757, o ven a Woodedge Plaza de martes a sábado, de 11 AM a 7 PM.</span></p></div></li>
           <li><b>2</b><div><h3><span class="en">Tell us the size and the date</span><span class="es">Dinos el tamaño y la fecha</span></h3><p><span class="en">How many people, which flavor, and the day you need it. Bring a picture if you have one.</span><span class="es">Cuántas personas, qué sabor y qué día lo necesitas. Trae una foto si tienes.</span></p></div></li>
           <li><b>3</b><div><h3><span class="en">Pick it up cold</span><span class="es">Recógelo frío</span></h3><p><span class="en">Pick up on the day we agree. Keep it in the fridge until it's time.</span><span class="es">Recógelo el día que quedemos. Guárdalo en el refri hasta la hora.</span></p></div></li>
         </ol>
@@ -1388,6 +1465,25 @@ a{color:inherit}
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-l">
+    <div class="xw-in">
+      <h2 id="xw-l"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="l-order" id="tl-order">
     <div class="in two">
       <form class="frm l-form" data-form novalidate>
@@ -1403,11 +1499,11 @@ a{color:inherit}
       <div class="l-visit">
         <h2><span class="en">Come by</span><span class="es">Ven a vernos</span></h2>
         <dl>
-          <dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd, Houston, TX 77070 · <span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span><br><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> →</a></dd>
-          <dt><span class="en">Hours</span><span class="es">Horario</span></dt><dd><span class="en">Opens at 11 AM. Call for today's hours.</span><span class="es">Abre a las 11 AM. Llama para el horario de hoy.</span></dd>
+          <dt><span class="en">Address</span><span class="es">Dirección</span></dt><dd>11902 Jones Rd, Suite P, Houston, TX 77070 · <span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span><br><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> →</a></dd>
+          <dt><span class="en">Hours</span><span class="es">Horario</span></dt><dd><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></dd>
           <dt><span class="en">Phone</span><span class="es">Teléfono</span></dt><dd><a href="tel:+18328688903">(832) 868-8903</a></dd>
         </dl>
-        <div class="ph" data-slot="1"></div>
+        <div class="ph has-img" data-slot="1"></div>
       </div>
     </div>
   </section>
@@ -1424,7 +1520,7 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="l-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="l-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 </section>
 
 <!-- ======================= 5 · LA VITRINA ======================= -->
@@ -1462,14 +1558,14 @@ a{color:inherit}
       <p class="vt-note"><span class="en">Sample case: we'll fill it with photos of your real cakes, their names and prices. Tap a photo to see it big.</span><span class="es">Vitrina de muestra: la llenaremos con fotos de sus pasteles reales, sus nombres y precios. Toca una foto para verla en grande.</span></p>
       <div class="vt-shelf" id="vt-shelf">
         <article class="vt-item" data-cat="wedding"><div class="ph" data-slot="3"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Wedding</span><span class="es">Boda</span></span><h3><span class="en">Three-tier wedding cake</span><span class="es">Pastel de boda de tres pisos</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="birthday"><div class="ph" data-slot="4"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">Birthday cake in your colors</span><span class="es">Pastel de cumpleaños con tus colores</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="tres"><div class="ph" data-slot="5"></div><div class="vt-lab"><span class="vt-cat">Tres leches</span><h3><span class="en">Classic tres leches</span><span class="es">Tres leches clásico</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="quince"><div class="ph" data-slot="2"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Quinceañera · sample</span><span class="es">Quinceañera · muestra</span></span><h3><span class="en">Quinceañera cake</span><span class="es">Pastel de quinceañera</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="wedding"><div class="ph" data-slot="1"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Wedding</span><span class="es">Boda</span></span><h3><span class="en">Matched to the couple's picture</span><span class="es">Igual a la foto de los novios</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="birthday"><div class="ph" data-slot="6"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">Kids' party theme cake</span><span class="es">Pastel con tema de fiesta infantil</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="tres"><div class="ph" data-slot="5"></div><div class="vt-lab"><span class="vt-cat">Tres leches</span><h3><span class="en">Tres leches party cake</span><span class="es">Tres leches para fiesta</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="birthday"><div class="ph has-img" data-slot="4"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">Birthday cake in your colors</span><span class="es">Pastel de cumpleaños con tus colores</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="tres"><div class="ph has-img" data-slot="5"></div><div class="vt-lab"><span class="vt-cat">Tres leches</span><h3><span class="en">Classic tres leches</span><span class="es">Tres leches clásico</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="quince"><div class="ph has-img" data-slot="2"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Quinceañera · sample</span><span class="es">Quinceañera · muestra</span></span><h3><span class="en">Quinceañera cake</span><span class="es">Pastel de quinceañera</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="wedding"><div class="ph has-img" data-slot="1"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Wedding</span><span class="es">Boda</span></span><h3><span class="en">Matched to the couple's picture</span><span class="es">Igual a la foto de los novios</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="birthday"><div class="ph has-img" data-slot="6"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">Kids' party theme cake</span><span class="es">Pastel con tema de fiesta infantil</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="tres"><div class="ph has-img" data-slot="5"></div><div class="vt-lab"><span class="vt-cat">Tres leches</span><h3><span class="en">Tres leches party cake</span><span class="es">Tres leches para fiesta</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
         <article class="vt-item" data-cat="quince"><div class="ph" data-slot="3"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Quinceañera · sample</span><span class="es">Quinceañera · muestra</span></span><h3><span class="en">Tiered cake in her colors</span><span class="es">Pastel de pisos con sus colores</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
-        <article class="vt-item" data-cat="birthday"><div class="ph" data-slot="4"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">From an inspiration picture</span><span class="es">Como una foto de inspiración</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
+        <article class="vt-item" data-cat="birthday"><div class="ph has-img" data-slot="4"></div><div class="vt-lab"><span class="vt-cat"><span class="en">Birthday</span><span class="es">Cumpleaños</span></span><h3><span class="en">From an inspiration picture</span><span class="es">Como una foto de inspiración</span></h3><em><span class="en">Ask</span><span class="es">Pregunta</span></em></div></article>
       </div>
     </div>
   </section>
@@ -1489,15 +1585,34 @@ a{color:inherit}
       <h2><span class="en">Three steps to your cake</span><span class="es">Tres pasos para tu pastel</span></h2>
       <ol class="vt-steps">
         <li><b>01</b><h3><span class="en">Choose</span><span class="es">Elige</span></h3><p><span class="en">Pick a cake from the case, or save the picture you love.</span><span class="es">Escoge un pastel de la vitrina, o guarda la foto que te encanta.</span></p></li>
-        <li><b>02</b><h3><span class="en">Call</span><span class="es">Llama</span></h3><p><span class="en">Call (832) 868-8903 with your date and how many people.</span><span class="es">Llama al (832) 868-8903 con tu fecha y para cuántas personas.</span></p></li>
+        <li><b>02</b><h3><span class="en">Call</span><span class="es">Llama</span></h3><p><span class="en">Call the cake line, (281) 807-3757, with your date and how many people.</span><span class="es">Llama a la línea de pasteles, (281) 807-3757, con tu fecha y para cuántas personas.</span></p></li>
         <li><b>03</b><h3><span class="en">Pick up</span><span class="es">Recoge</span></h3><p><span class="en">Pick it up at Woodedge Plaza on the day we agree.</span><span class="es">Recógelo en Woodedge Plaza el día que quedemos.</span></p></li>
       </ol>
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-vt">
+    <div class="xw-in">
+      <h2 id="xw-vt"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="vt-order" id="vitrina-order">
     <div class="in two">
-      <div class="vt-ophoto"><div class="ph" data-slot="2"></div></div>
+      <div class="vt-ophoto"><div class="ph has-img" data-slot="2"></div></div>
       <form class="frm vt-form" data-form novalidate>
         <h3><span class="en">Ask for a cake</span><span class="es">Pide un pastel</span></h3>
         <label><span class="en">Your name</span><span class="es">Tu nombre</span><input name="name" type="text" autocomplete="name"></label>
@@ -1512,8 +1627,8 @@ a{color:inherit}
 
   <section class="vt-visit">
     <div class="in vt-vg">
-      <div><span class="vt-k"><span class="en">Address</span><span class="es">Dirección</span></span><p>11902 Jones Rd<br>Houston, TX 77070<br><span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> ↗</a></div>
-      <div><span class="vt-k"><span class="en">Hours</span><span class="es">Horario</span></span><p><span class="en">Opens at 11 AM.</span><span class="es">Abre a las 11 AM.</span><br><span class="en">Call for today's hours.</span><span class="es">Llama para el horario de hoy.</span></p></div>
+      <div><span class="vt-k"><span class="en">Address</span><span class="es">Dirección</span></span><p>11902 Jones Rd, Suite P<br>Houston, TX 77070<br><span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p><a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span> ↗</a></div>
+      <div><span class="vt-k"><span class="en">Hours</span><span class="es">Horario</span></span><p><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></p></div>
       <div><span class="vt-k"><span class="en">Phone</span><span class="es">Teléfono</span></span><p><a href="tel:+18328688903">(832) 868-8903</a></p></div>
     </div>
   </section>
@@ -1530,7 +1645,7 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="vt-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="vt-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 
   <div class="vt-lb" id="vt-lb" role="dialog" aria-modal="true" aria-label="Photo / Foto" hidden>
     <div class="vt-lbin">
@@ -1559,7 +1674,7 @@ a{color:inherit}
       <h1><span class="en">Party cakes that<br><span>steal the show</span></span><span class="es">Pasteles que se<br><span>roban la fiesta</span></span></h1>
       <p class="c-sub"><span class="en">Birthday cakes made to order in Woodedge Plaza on Jones Road. Pick a theme, tell us the age and the colors, or bring a picture, and we'll make the cake they'll talk about all year.</span><span class="es">Pasteles de cumpleaños por encargo en Woodedge Plaza sobre Jones Road. Escoge un tema, dinos la edad y los colores, o trae una foto, y hacemos el pastel del que van a hablar todo el año.</span></p>
       <div class="c-cta"><a class="c-b1" href="#cumple-themes" data-scroll><span class="en">Pick a theme</span><span class="es">Escoge un tema</span></a><a class="c-b2" href="tel:+18328688903"><span class="en">Call</span><span class="es">Llama al</span> (832) 868-8903</a></div>
-      <ul class="c-facts"><li><span class="en">Opens 11 AM</span><span class="es">Abre 11 AM</span></li><li>★ 4.4 · <span class="en">91 Google reviews</span><span class="es">91 reseñas en Google</span></li><li>Woodedge Plaza</li></ul>
+      <ul class="c-facts"><li><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span></li><li>★ 4.4 · <span class="en">91 Google reviews</span><span class="es">91 reseñas en Google</span></li><li>Woodedge Plaza</li></ul>
     </div>
   </header>
 
@@ -1634,7 +1749,7 @@ a{color:inherit}
       <h2><span class="en">Party plan in 3 steps</span><span class="es">Tu fiesta en 3 pasos</span></h2>
       <ol class="c-steps">
         <li><b>1</b><h3><span class="en">Pick it</span><span class="es">Escógelo</span></h3><p><span class="en">A theme, the colors, the name and the age. Or bring a picture.</span><span class="es">Un tema, los colores, el nombre y la edad. O trae una foto.</span></p></li>
-        <li><b>2</b><h3><span class="en">Call it in</span><span class="es">Llama</span></h3><p><span class="en">Call (832) 868-8903 with the party date and how many guests.</span><span class="es">Llama al (832) 868-8903 con la fecha de la fiesta y cuántos invitados.</span></p></li>
+        <li><b>2</b><h3><span class="en">Call it in</span><span class="es">Llama</span></h3><p><span class="en">Call the cake line, (281) 807-3757, with the party date and how many guests.</span><span class="es">Llama a la línea de pasteles, (281) 807-3757, con la fecha de la fiesta y cuántos invitados.</span></p></li>
         <li><b>3</b><h3><span class="en">Pick it up</span><span class="es">Recógelo</span></h3><p><span class="en">Grab it at Woodedge Plaza on the day we agree. Then: candles!</span><span class="es">Pasa por él a Woodedge Plaza el día que quedemos. Luego: ¡las velitas!</span></p></li>
       </ol>
     </div>
@@ -1642,13 +1757,32 @@ a{color:inherit}
 
   <section class="c-gal">
     <div class="in c-pols">
-      <figure style="--r:-4deg"><div class="ph" data-slot="4"></div><figcaption><span class="en">Birthday</span><span class="es">Cumpleaños</span></figcaption></figure>
-      <figure style="--r:3deg"><div class="ph" data-slot="6"></div><figcaption><span class="en">The team</span><span class="es">El equipo</span></figcaption></figure>
-      <figure style="--r:-2deg"><div class="ph" data-slot="5"></div><figcaption>Tres leches</figcaption></figure>
-      <figure style="--r:4deg"><div class="ph" data-slot="1"></div><figcaption><span class="en">Come see us</span><span class="es">Ven a vernos</span></figcaption></figure>
+      <figure style="--r:-4deg"><div class="ph has-img" data-slot="4"></div><figcaption><span class="en">Birthday</span><span class="es">Cumpleaños</span></figcaption></figure>
+      <figure style="--r:3deg"><div class="ph has-img" data-slot="6"></div><figcaption><span class="en">The team</span><span class="es">El equipo</span></figcaption></figure>
+      <figure style="--r:-2deg"><div class="ph has-img" data-slot="5"></div><figcaption>Tres leches</figcaption></figure>
+      <figure style="--r:4deg"><div class="ph has-img" data-slot="1"></div><figcaption><span class="en">Come see us</span><span class="es">Ven a vernos</span></figcaption></figure>
     </div>
   </section>
 
+  <section class="xw" aria-labelledby="xw-c">
+    <div class="xw-in">
+      <h2 id="xw-c"><span class="en">Every day at Los Globos</span><span class="es">Todos los días en Los Globos</span></h2>
+      <p class="xw-lead"><span class="en">What the signs in our window on Jones Road promise. Ask what's ready today.</span><span class="es">Lo que anuncian los letreros de nuestra ventana en Jones Road. Pregunta qué hay listo hoy.</span></p>
+      <ul class="xw-list">
+        <li><b><span class="en">Custom cakes</span><span class="es">Pasteles personalizados</span></b></li>
+        <li><b>Cupcakes</b></li>
+        <li><b><span class="en">Flan napolitano</span><span class="es">Flan napolitano</span></b></li>
+        <li><b><span class="en">Pastries</span><span class="es">Repostería</span></b></li>
+        <li><b><span class="en">Fresh bread every day</span><span class="es">Pan fresco todos los días</span></b></li>
+        <li><b><span class="en">Tres leches</span><span class="es">Tres leches</span></b></li>
+      </ul>
+      <div class="xw-row">
+        <p class="xw-call"><span class="en">Cake orders:</span><span class="es">Pedidos de pasteles:</span> <a href="tel:+12818073757">(281) 807-3757</a> <span>· <span class="en">Bakery:</span><span class="es">Pastelería:</span> <a href="tel:+18328688903">(832) 868-8903</a></span></p>
+        <p class="xw-hrs"><span class="en">Tue–Sat 11 AM–7 PM</span><span class="es">Mar–sáb 11 AM–7 PM</span> · <span class="en">closed Sun &amp; Mon</span><span class="es">cerrado dom y lun</span></p>
+      </div>
+      <p class="xw-small"><span class="en">Cards and PayPal accepted · Nextdoor Neighborhood Fave 2024</span><span class="es">Aceptamos tarjetas y PayPal · Favorito del vecindario en Nextdoor 2024</span></p>
+    </div>
+  </section>
   <section class="c-order" id="cumple-order">
     <div class="in two">
       <div class="c-ocopy">
@@ -1656,8 +1790,8 @@ a{color:inherit}
         <p><span class="en">Tell us about the party and we'll call you back to go over the details.</span><span class="es">Cuéntanos de la fiesta y te llamamos para ver los detalles.</span></p>
         <div class="c-visit">
           <h3><span class="en">Find us</span><span class="es">Encuéntranos</span></h3>
-          <p>11902 Jones Rd, Houston, TX 77070 · <span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p>
-          <p><span class="en">Opens at 11 AM. Call for today's hours.</span><span class="es">Abre a las 11 AM. Llama para el horario de hoy.</span></p>
+          <p>11902 Jones Rd, Suite P, Houston, TX 77070 · <span class="en">Woodedge Plaza</span><span class="es">Woodedge Plaza</span></p>
+          <p><span class="en">Tuesday to Saturday, 11 AM to 7 PM.<br>Closed Sunday and Monday.</span><span class="es">Martes a sábado, 11 AM a 7 PM.<br>Cerrado domingo y lunes.</span></p>
           <p><a href="tel:+18328688903">(832) 868-8903</a> · <a href="https://www.google.com/maps/search/?api=1&amp;query=Los+Globos+Bakery+11902+Jones+Rd+Houston+TX+77070" target="_blank" rel="noopener"><span class="en">Get directions</span><span class="es">Cómo llegar</span></a></p>
         </div>
       </div>
@@ -1685,10 +1819,10 @@ a{color:inherit}
     </div>
   </section>
 
-  <footer class="c-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
+  <footer class="c-foot"><div class="in"><b>Los Globos Bakery</b> · 11902 Jones Rd, Suite P, Houston, TX 77070 · <a href="tel:+18328688903">(832) 868-8903</a> · <span class="en">Cakes</span><span class="es">Pasteles</span> <a href="tel:+12818073757">(281) 807-3757</a><span class="made"><span class="en">Sample website made for you by Brandon Bridges</span><span class="es">Sitio de muestra hecho para ustedes por Brandon Bridges</span></span></div></footer>
 </section>
 </main>
-<script>const CFG = {"views": ["home", "globos", "taller", "boda", "tresleches", "vitrina", "cumple"], "store": "lg-lang", "name": "Los Globos Bakery", "slots": {"1": ["The bakery", "La pastelería"], "2": ["The display case", "La vitrina"], "3": ["A wedding cake", "Un pastel de boda"], "4": ["A birthday cake", "Un pastel de cumpleaños"], "5": ["Tres leches", "Tres leches"], "6": ["The team", "El equipo"]}, "phone": "(832) 868-8903"};</script>
+<script>const CFG = {"views": ["home", "globos", "taller", "boda", "tresleches", "vitrina", "cumple"], "store": "lg-lang", "name": "Los Globos Bakery", "slots": {"1": ["The bakery", "La pastelería"], "2": ["Fresh bread every day", "Pan fresco todos los días"], "3": ["A wedding cake", "Un pastel de boda"], "4": ["Cupcakes", "Cupcakes"], "5": ["Tres leches", "Tres leches"], "6": ["Our window", "Nuestra ventana"]}, "phone": "(832) 868-8903"};</script>
 <script>(function(){
   const root = document.documentElement;
   const store = {
@@ -1784,7 +1918,7 @@ a{color:inherit}
   const isEs = () => root.dataset.lang === 'es';
   const bi = (en, es) => '<span class="en">' + en + '</span><span class="es">' + es + '</span>';
   const onLang = fn => { try{ new MutationObserver(fn).observe(root, {attributes:true, attributeFilter:['data-lang']}) }catch(e){} };
-  const TEL = '<a href="tel:+18328688903">(832) 868-8903</a>';
+  const TEL = '<a href="tel:+12818073757">(281) 807-3757</a>';
 
   /* ---------- 1 · Globos: balloons open their cake details ---------- */
   (function(){
