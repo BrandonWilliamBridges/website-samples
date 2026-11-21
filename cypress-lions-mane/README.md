@@ -2,7 +2,7 @@
 
 One-page site for a Lion's Mane grower in Cypress, TX, under the Houston Plant and Healing Farm network. English and Spanish toggle (EN/ES in the header).
 
-This is the samples copy. The main copy is in BrandonWilliamBridges/hpahf-site (folder `cypress-lions-mane/`, branch `cypress-lions-mane`). Make changes there, then copy them here.
+This is the samples copy. The main copy is in BrandonWilliamBridges/hpahf-site (folder `cypress-lions-mane/` on `main`). Make changes there, then copy them here.
 
 - Highlighted text is a placeholder to confirm (pickup days, payment, contact, sizes, freshness promise).
 - Forms don't send anything yet.
