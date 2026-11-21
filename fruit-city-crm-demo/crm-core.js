@@ -330,6 +330,16 @@ export default {
   },
   // Replies to task emails (Email Routing rule: tasks@ -> this Worker)
   async email(message, env) {
+    // Someone whose access is turned off can't change anything by email; their mail goes to the admin untouched.
+    const addrs = [message.headers?.get?.('from'), message.from]
+      .map((v) => (String(v || '').match(/[^\s<>"']+@[^\s<>"']+/) || [])[0]).filter(Boolean).map((v) => v.toLowerCase());
+    let sender = null;
+    for (const a of addrs) { sender = await env.DB.prepare(`SELECT username, role FROM users WHERE lower(email)=?`).bind(a).first(); if (isDenied(env, sender)) break; }
+    if (isDenied(env, sender)) {
+      const admin = await env.DB.prepare(`SELECT email FROM users WHERE role='admin' AND email IS NOT NULL ORDER BY id LIMIT 1`).first();
+      if (admin?.email) { try { await message.forward(admin.email); } catch (e) { /* nothing more to do */ } }
+      return;
+    }
     await ensureAgreements(env);
     // Someone limited by the confidentiality agreement can't change tasks by email; those replies go to the admin untouched.
     const isBlocked = async (u) => u.role !== 'admin' && statusOf(env, await agreementRow(env, u.username)).status === 'blocked';
@@ -858,10 +868,17 @@ async function importOsm({ items }, db, me) {
 const enc = new TextEncoder();
 let jwksCache = null;
 
+// Users whose CRM access an admin has turned off completely (DENIED_USERS in wrangler.toml, comma separated).
+// Their records stay; they just can't sign in, and their emails to the CRM go to the admin untouched.
+const DENIED_MSG = 'Your access to the Fruit City CRM is turned off. Please talk to Brandon.';
+const isDenied = (env, u) => !!u && u.role !== 'admin' &&
+  String(env.DENIED_USERS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean).includes(String(u.username).toLowerCase());
+
 async function authenticate(request, env) {
   if (env.DEV_AUTH_EMAIL) { // local dev only (set in .dev.vars); never set in production
     const as = request.headers.get('x-dev-user');
     const r = as && (await env.DB.prepare(`SELECT username, role FROM users WHERE username=?`).bind(as).first());
+    if (isDenied(env, r)) throw new Error(DENIED_MSG);
     return r ? { username: r.username, role: r.role || 'member' } : { username: env.DEV_AUTH_EMAIL, role: 'admin' };
   }
   const token = request.headers.get('cf-access-jwt-assertion');
@@ -874,6 +891,7 @@ async function authenticate(request, env) {
   }
   const row = await env.DB.prepare(`SELECT username, role FROM users WHERE email=?`).bind(email).first();
   if (!row) throw new Error(`${email} isn't set up in the CRM yet. Ask an admin to add you.`);
+  if (isDenied(env, row)) throw new Error(DENIED_MSG);
   return { username: row.username, role: row.role || 'member', email };
 }
 
