@@ -19,3 +19,6 @@ Brandon's portfolio of website samples, served by GitHub Pages at https://brando
 
 ## Commands
 - Preview locally: `python3 -m http.server` from the repository root, then open `/` (links that start with `/website-samples` only work when served from that path)
+## Working with Brandon
+- Spell out every term. No acronyms, or put the short form in parentheses after the full term the first time.
+- Answer first, then the detail. Say plainly when something is inferred or couldn't be checked.
