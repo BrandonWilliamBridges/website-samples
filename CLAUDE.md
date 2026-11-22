@@ -11,7 +11,8 @@ Brandon's portfolio of website samples, served by GitHub Pages at https://brando
 
 ## Rules
 - Nothing private is ever published here: no secrets, keys, real customer data, analytics, or forms that actually send.
-- Every sample page carries `noindex` so the samples don't compete with the real sites in search (the portfolio home page is the exception). `cypress-lions-mane/index.html` is missing it as of November 2026.
+- Every sample page carries `noindex` so the samples don't compete with the real sites in search (the portfolio home page is the exception). The `cypress-lions-mane/` copy here has it; the main copy in hpahf-site does not, so keep that one line when you copy the page across.
+- `.github/scripts/sync-to-samples.py` is the one copy of the sync script. Each source repository's `sync-samples.yml` workflow checks out this repository and runs the script from it, so a change here reaches every site on its next sync. It removes anything private, points links at the copy's folder, removes analytics, adds `noindex`, stops forms from sending, and halts if anything still looks like a secret. Change it with care and test with `--no-push`.
 - `.samples-base` holds the base path (`/website-samples`) the sync script uses to rewrite links.
 - Client samples follow the Vivero de Rosas approach (several designs with a toggle, at least English and Spanish) and must not look like Vivero de Rosas.
 - When adding or removing a sample, update `index.html`.
