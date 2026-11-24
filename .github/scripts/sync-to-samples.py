@@ -13,7 +13,8 @@ OUT holds one folder per site (for example OUT/vivero-de-rosas/). For each folde
        - links that start with "/" are pointed at the site's folder (for example /website-samples/tpotdoc/),
        - analytics tags are removed so portfolio visits don't count as real-site traffic,
        - a noindex tag is added so the copy doesn't compete with the real site in search results,
-       - a small script stops contact forms from sending real messages,
+       - a small script stops contact forms from sending real messages (including the sites' own live
+         form services in LIVE_ENDPOINTS, whose addresses are also blanked in JavaScript files),
   3. stops the whole sync if anything still looks like a secret,
   4. replaces SAMPLES/<site>/ with the result.
 Then it commits and pushes, retrying if another site pushed at the same moment.
@@ -47,9 +48,27 @@ SECRET_PATTERNS = [
     (r'\bxox[abprs]-[A-Za-z0-9-]{10,}', 'Slack token'),
     (r'\bAIza[0-9A-Za-z_-]{35}\b', 'Google API key'),
     (r'(?i)\b(?:api[_-]?key|secret|password|passwd|auth[_-]?token|access[_-]?token)\b\s*[:=]\s*["\'][^"\'\s]{12,}["\']', 'hard-coded secret'),
+    # Cloudflare: API tokens (40 characters) and Global API keys (37 hexadecimal characters) have no fixed prefix,
+    # so they are caught by the name next to them; Origin CA keys have their own shape.
+    (r'(?i)\b(?:cloudflare|cf)[_-]?(?:api[_-]?)?(?:token|key|secret)\b["\']?\s*[:=]\s*["\']?[A-Za-z0-9_-]{37,}', 'Cloudflare token or key'),
+    (r'(?i)\bX-Auth-Key\b["\']?\s*[:=]\s*["\']?[0-9a-f]{37}\b', 'Cloudflare Global API key'),
+    (r'\bv1\.0-[0-9a-f]{24}-[0-9a-f]{146}\b', 'Cloudflare Origin CA key'),
+    # Twilio: Account SID (AC + 32 hex), API key SID (SK + 32 hex), and the auth token or API secret next to its name.
+    (r'\bAC[0-9a-f]{32}\b', 'Twilio Account SID'),
+    (r'\bSK[0-9a-f]{32}\b', 'Twilio API key'),
+    (r'(?i)\btwilio[_-]?(?:auth[_-]?token|api[_-]?secret|secret|token)\b["\']?\s*[:=]\s*["\']?[0-9A-Za-z]{32}\b', 'Twilio auth token or secret'),
 ]
+# Live form services run by the source sites themselves. In the portfolio copy their addresses are blanked in
+# JavaScript files (so forms fall back to "call or email us"), forms and fetch calls to them are stopped by the
+# sandbox script, and the sync stops if a JavaScript file still holds one.
+LIVE_ENDPOINTS = [
+    'apply.fruitcityworldwide.org',   # Fruit City volunteer applications (crm/volunteer-intake)
+    'signup.fruitcityworldwide.org',  # Fruit City newsletter sign-up (workers/newsletter)
+]
+LIVE_URL = re.compile(r'(["\'`])https?://(?:' + '|'.join(re.escape(h) for h in LIVE_ENDPOINTS) + r')(?:/[^"\'`]*)?\1', re.I)
 TEXT_EXT = {'.html', '.htm', '.js', '.mjs', '.css', '.json', '.xml', '.txt', '.svg', '.md', '.webmanifest', '.map'}
-FORM_SERVICES = r'formsubmit\.co|formspree\.io|web3forms\.com|getform\.io|usebasin\.com|api\.emailjs\.com|hooks\.zapier\.com|script\.google\.com|hook\.[a-z0-9]+\.make\.com'
+FORM_SERVICES = (r'formsubmit\.co|formspree\.io|web3forms\.com|getform\.io|usebasin\.com|api\.emailjs\.com|hooks\.zapier\.com|script\.google\.com|hook\.[a-z0-9]+\.make\.com|'
+                 + '|'.join(re.escape(h) for h in LIVE_ENDPOINTS))
 SANDBOX_FILE = 'samples-sandbox.js'  # served from the site's own folder, so a site's Content-Security-Policy allows it
 SANDBOX = (
     '/* Added by sync-to-samples.py: this is a portfolio copy, so forms here never send anything. */(function(){'
@@ -123,11 +142,14 @@ def adjust(root, prefix):
         for f in filenames:
             p = os.path.join(dirpath, f)
             ext = os.path.splitext(f)[1].lower()
-            if ext not in ('.html', '.htm', '.css'):
+            if ext not in ('.html', '.htm', '.css', '.js', '.mjs'):
                 continue
             with open(p, encoding='utf-8', errors='surrogateescape') as fh:
                 text = fh.read()
-            new = rewrite_html(text, prefix) if ext != '.css' else rewrite_css(text, prefix)
+            if ext in ('.js', '.mjs'):
+                new = LIVE_URL.sub(lambda m: m.group(1) * 2, text)  # 'https://apply.../apply' -> ''
+            else:
+                new = rewrite_html(text, prefix) if ext != '.css' else rewrite_css(text, prefix)
             if new != text:
                 with open(p, 'w', encoding='utf-8', errors='surrogateescape') as fh:
                     fh.write(new)
@@ -148,6 +170,8 @@ def check(root, extra_values):
             for pat, what in SECRET_PATTERNS:
                 if re.search(pat, text):
                     problems.append(f'{rel}: looks like it contains a {what}')
+            if os.path.splitext(f)[1].lower() in ('.js', '.mjs') and f != SANDBOX_FILE and LIVE_URL.search(text):
+                problems.append(f'{rel}: still points at a live form service ({", ".join(LIVE_ENDPOINTS)})')
             for v in extra_values:
                 if v in text:
                     problems.append(f'{rel}: contains a private value from the source repo\'s config')
