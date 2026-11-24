@@ -1,0 +1,9 @@
+# Cloudflare Pages redirect rules for fruitcityworldwide.org.
+# Cloudflare Pages publishes the repository root as it is (there is no build step), so files that are
+# only for the people working on the site would otherwise be public. These answer "not found" instead.
+# Rules here win over files that exist, so keep them narrow.
+/CLAUDE.md      /404.html  404
+/.claude/*      /404.html  404
+/.github/*      /404.html  404
+/.gitignore     /404.html  404
+/scripts/*      /404.html  404

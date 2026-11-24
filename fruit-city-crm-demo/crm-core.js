@@ -41,6 +41,9 @@ const canReview = (env, user) => user.role === 'admin' ||
   String(env.VOLUNTEER_REVIEWERS || '').split(',').map((u) => u.trim()).filter(Boolean).includes(user.username);
 const visibleSchema = (me) => (me.canReview ? SCHEMA : Object.fromEntries(Object.entries(SCHEMA).filter(([t]) => !REVIEWER_ONLY.includes(t))));
 
+// OpenStreetMap Overpass mirrors for "Discover nearby" (the browser asks them directly; see CSP below).
+const OVERPASS_HOSTS = ['https://overpass-api.de', 'https://overpass.kumi.systems', 'https://overpass.private.coffee'];
+
 const CONTACT_TYPES = ['pastor', 'imam', 'rabbi', 'priest', 'monk / nun', 'faith leader', 'community leader', 'partner', 'volunteer', 'donor', 'board', 'advisor', 'staff', 'other'];
 
 // Single source of truth for tables + form fields (UI reads this via /api/schema)
@@ -280,10 +283,12 @@ const scopeSql = (table, me, write = false) => (table === 'tasks' ? tasksScope(m
   : me.role !== 'admin' && PRIVATE[table]
     ? (table === 'contacts' && !write ? { sql: `(c.created_by=? OR ${ADMIN_CONTACTS_SQL})`, binds: [me.username] } : { sql: `${PRIVATE[table]}.created_by=?`, binds: [me.username] })
     : null);
+// Returns { sql, binds }. A member's organization list counts only their own contacts; the username is a bound
+// parameter (never pasted into the SQL text), and its value comes first because the subquery sits before WHERE.
 const selectFor = (table, me) =>
   table === 'organizations' && me.role !== 'admin'
-    ? SELECT.organizations.replace('WHERE c.org_id=o.id', 'WHERE c.org_id=o.id AND c.created_by=' + "'" + me.username.replace(/'/g, "''") + "'")
-    : SELECT[table];
+    ? { sql: SELECT.organizations.replace('WHERE c.org_id=o.id', 'WHERE c.org_id=o.id AND c.created_by=?'), binds: [me.username] }
+    : { sql: SELECT[table], binds: [] };
 // The same OpenStreetMap place can be imported separately by each member (their own copy)
 const osmKey = (id, me) => (me.role === 'admin' ? id : `${id}@${me.username}`);
 
@@ -306,6 +311,53 @@ async function autoTags(table, row, db) {
   return null;
 }
 
+// Security headers for the app page (and the sign-in message page).
+// The page's own script and styles are inline, and its buttons use onclick="..." attributes, so script-src and
+// style-src need 'unsafe-inline' for now. Everything else is limited to what ui.html actually uses:
+// Leaflet 1.9.4 from unpkg (also pinned with integrity hashes in ui.html), OpenStreetMap map tiles,
+// address lookups (Nominatim) and the Overpass mirrors for "Discover nearby", and photos and videos
+// from this Worker or from the browser's own memory (blob:) while they upload.
+const LEAFLET = 'https://unpkg.com/leaflet@1.9.4/dist/';
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' ${LEAFLET}`,
+  `style-src 'self' 'unsafe-inline' ${LEAFLET}`,
+  `img-src 'self' data: blob: https://*.tile.openstreetmap.org ${LEAFLET}`,
+  "media-src 'self' blob:",
+  "font-src 'self'",
+  `connect-src 'self' https://nominatim.openstreetmap.org ${OVERPASS_HOSTS.join(' ')}`,
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+const PAGE_HEADERS = {
+  'content-type': 'text/html; charset=utf-8',
+  'content-security-policy': CSP,
+  'x-frame-options': 'DENY',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
+  'x-content-type-options': 'nosniff',
+};
+
+// Sign-in problems that are safe to show the person as they are. Anything else gets a general message.
+class AuthError extends Error {}
+
+// Cross-site request forgery guard for the API: a change (POST, PUT, PATCH, DELETE) must come from this
+// Worker's own page. Browsers always send an Origin header on these requests and a page on another site
+// can't fake it; JSON (or a photo or video file for uploads) can't be sent by a plain form on another site
+// without the browser asking first, and the Worker never answers that question with a yes.
+const WRITES = ['POST', 'PUT', 'PATCH', 'DELETE'];
+function crossSiteProblem(request, url) {
+  if (!WRITES.includes(request.method)) return null;
+  if (request.headers.get('origin') !== url.origin) return 'This request did not come from the CRM page.';
+  const type = (request.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  const upload = url.pathname === '/api/attachments' && request.method === 'POST';
+  if (type === 'application/json') return null;
+  if (upload && (/^(image|video)\/[\w.+-]+$/.test(type) || type === 'multipart/form-data')) return null;
+  return 'Unsupported content type.';
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -314,18 +366,24 @@ export default {
       user = await authenticate(request, env);
       user.canReview = canReview(env, user);
     } catch (e) {
-      if (url.pathname.startsWith('/api/')) return json({ error: e.message }, 401);
-      return msgPage(e.message);
+      const msg = e instanceof AuthError ? e.message : 'Could not sign you in. Reload the page to try again.';
+      if (!(e instanceof AuthError)) console.error('sign-in failed', e);
+      if (url.pathname.startsWith('/api/')) return json({ error: msg }, 401);
+      return msgPage(msg);
     }
 
     if (!url.pathname.startsWith('/api/')) {
-      return new Response(HTML, { headers: { 'content-type': 'text/html; charset=utf-8' } });
+      return new Response(HTML, { headers: PAGE_HEADERS });
     }
+
+    const csrf = crossSiteProblem(request, url);
+    if (csrf) return json({ error: csrf }, 403);
 
     try {
       return await api(request, env, url, user);
     } catch (e) {
-      return json({ error: e.message }, 500);
+      console.error('CRM request failed', request.method, url.pathname, e);
+      return json({ error: 'Something went wrong on the server. Please try again.' }, 500);
     }
   },
   // Replies to task emails (Email Routing rule: tasks@ -> this Worker)
@@ -432,7 +490,8 @@ async function api(request, env, url, me) {
   }
 
   if (method === 'GET' && id) {
-    const row = await db.prepare(`${selectFor(table, me)} WHERE ${a}.id=?`).bind(id).first();
+    const sel = selectFor(table, me);
+    const row = await db.prepare(`${sel.sql} WHERE ${a}.id=?`).bind(...sel.binds, id).first();
     return row ? json(row) : json({ error: 'Not found' }, 404);
   }
   if (method === 'GET') {
@@ -449,8 +508,9 @@ async function api(request, env, url, me) {
       if (k !== 'q' && k !== 'limit' && cols.includes(k) && v !== '') { where.push(`${a}.${k}=?`); binds.push(v); }
     }
     const limit = Math.min(Number(url.searchParams.get('limit')) || 500, 2000);
-    const sql = `${selectFor(table, me)} ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY ${ORDER[table]} LIMIT ${limit}`;
-    const { results } = await db.prepare(sql).bind(...binds).all();
+    const sel = selectFor(table, me);
+    const sql = `${sel.sql} ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY ${ORDER[table]} LIMIT ${limit}`;
+    const { results } = await db.prepare(sql).bind(...sel.binds, ...binds).all();
     return json(results);
   }
   if (method === 'POST' || method === 'PUT') {
@@ -472,6 +532,19 @@ async function api(request, env, url, me) {
     // Merge with the saved row so derived fields see the full record
     const prev = id ? await db.prepare(`SELECT * FROM ${table} WHERE id=?`).bind(id).first() : {};
     const full = { ...prev, ...data };
+
+    // Linked records (contact, organization, program, grant...): each new or changed link must point at a record
+    // that exists and that this person could see in its own list (members: rows they created, plus the admins'
+    // contact records; shared Food rescue records: everyone; admins: everything). Otherwise a member could link
+    // someone else's contact, read its name back through the joined label, and email it.
+    for (const f of def.fields) {
+      if (f.type !== 'ref' || !(f.name in data) || data[f.name] === null) continue;
+      if (prev && prev[f.name] === data[f.name]) continue; // an unchanged link that was already saved
+      const v = data[f.name];
+      if (!Number.isInteger(v) || v <= 0 || !visibleSchema(me)[f.ref] || !(await canSee(db, f.ref, v, me))) {
+        return json({ error: `${f.label}: pick one from the list` }, 400);
+      }
+    }
 
     if (table === 'organizations' && method === 'POST' && !data.status) data.status = full.status = 'prospect';
     if (table === 'organizations') {
@@ -509,7 +582,7 @@ async function api(request, env, url, me) {
       if (table === 'organizations') await retagContacts(db, r.id);
       await logActivity(env, me, 'add', table, r.id, labelOf(table, def, full), def.singular);
       if (table === 'tasks') return json({ id: r.id, note: await afterTaskSave(env, me, r.id, {}, { ...full, created_by: email }, virtual.email_now, true) }, 201);
-      if (table === 'interactions') return json({ id: r.id, note: await afterInteractionSave(env, me, r.id, full, virtual.email_now) }, 201);
+      if (table === 'interactions') return json({ id: r.id, note: await afterInteractionSave(env, me, r.id, full, virtual.email_now, (cid) => canSee(db, 'contacts', cid, me)) }, 201);
       return json({ id: r.id }, 201);
     }
     if (!id) return json({ error: 'Missing id' }, 400);
@@ -517,7 +590,7 @@ async function api(request, env, url, me) {
     if (table === 'organizations') await retagContacts(db, id);
     await logActivity(env, me, 'edit', table, id, labelOf(table, def, full), def.singular);
     if (table === 'tasks') return json({ id, note: await afterTaskSave(env, me, id, prev, full, virtual.email_now, false) });
-    if (table === 'interactions') return json({ id, note: await afterInteractionSave(env, me, id, full, virtual.email_now) });
+    if (table === 'interactions') return json({ id, note: await afterInteractionSave(env, me, id, full, virtual.email_now, (cid) => canSee(db, 'contacts', cid, me)) });
     return json({ id });
   }
   if (method === 'DELETE' && id) {
@@ -601,6 +674,26 @@ async function linked(params, db, me) {
 const MAX_UPLOAD = 100 * 1024 * 1024; // Workers accept request bodies up to 100 MB
 const mediaOut = (r) => ({ id: r.id, filename: r.filename, content_type: r.content_type, size: r.size, created_by: r.created_by, created_at: r.created_at, url: `/api/attachments/${r.id}/file` });
 
+// Wraps an upload body so its bytes are counted as they stream through. Past `max` bytes the stream fails, so the
+// storage write fails too. On Cloudflare, FixedLengthStream also makes the write fail unless exactly `max` bytes
+// arrive (and tells the storage bucket the length up front). The demo passes a file (Blob) whose size is known.
+function countedBody(source, max) {
+  let n = 0;
+  if (!source || typeof source.pipeThrough !== 'function') {
+    n = Number(source?.size ?? source?.byteLength ?? 0);
+    return { body: source, received: () => n };
+  }
+  let body = source.pipeThrough(new TransformStream({
+    transform(chunk, ctl) {
+      n += chunk.byteLength;
+      if (n > max) ctl.error(new Error(`more than ${max} bytes`));
+      else ctl.enqueue(chunk);
+    },
+  }));
+  if (typeof FixedLengthStream === 'function') body = body.pipeThrough(new FixedLengthStream(max));
+  return { body, received: () => n };
+}
+
 async function canSee(db, table, id, me, write = false) {
   if (REVIEWER_ONLY.includes(table) && !me.canReview) return false;
   const s = scopeSql(table, me, write);
@@ -637,9 +730,22 @@ async function attachments(request, env, url, parts, me) {
       }
       const filename = (url.searchParams.get('name') || 'file').replace(/[\\/\r\n"]/g, '_').slice(0, 200);
       const key = `${table}/${id}/${crypto.randomUUID()}`;
-      await env.MEDIA.put(key, request.body, { httpMetadata: { contentType: type } });
+      // The size header is only the sender's claim, so count the bytes as they arrive: stop past the limit or past
+      // the claimed size, and refuse the file unless exactly the claimed number of bytes arrived.
+      const { body, received } = countedBody(request.body, Math.min(size, MAX_UPLOAD));
+      try {
+        await env.MEDIA.put(key, body, { httpMetadata: { contentType: type } });
+      } catch (e) {
+        console.warn('upload stopped', e?.message || e);
+        await env.MEDIA.delete(key).catch(() => {});
+        return json({ error: received() > MAX_UPLOAD ? 'Files must be under 100 MB' : 'The file did not arrive in full. Please try again.' }, received() > size ? 413 : 400);
+      }
+      if (received() !== size) {
+        await env.MEDIA.delete(key).catch(() => {});
+        return json({ error: 'The file did not arrive in full. Please try again.' }, 400);
+      }
       const r = await db.prepare(`INSERT INTO attachments (table_name,record_id,r2_key,filename,content_type,size,created_by) VALUES (?,?,?,?,?,?,?) RETURNING *`)
-        .bind(table, id, key, filename, type, size, me.username).first();
+        .bind(table, id, key, filename, type, received(), me.username).first();
       await logActivity(env, me, 'upload', table, id, filename, SCHEMA[table].singular);
       return json(mediaOut(r), 201);
     }
@@ -795,7 +901,7 @@ const RELIGION_TYPE = { christian: 'church', muslim: 'mosque', jewish: 'synagogu
 // ---- Discover places of worship / nonprofits near a point (OpenStreetMap Overpass) ----
 // The browser runs the Overpass query itself (more reliable than from Cloudflare's servers);
 // the Worker builds the query, shapes the results, and is a fallback with several mirrors.
-const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+const OVERPASS = OVERPASS_HOSTS.map((h) => `${h}/api/interpreter`);
 function osmQuery(params) {
   const lat = Number(params.get('lat')), lng = Number(params.get('lng'));
   const radius = Math.min(Number(params.get('radius')) || 5000, 25000);
@@ -878,20 +984,21 @@ async function authenticate(request, env) {
   if (env.DEV_AUTH_EMAIL) { // local dev only (set in .dev.vars); never set in production
     const as = request.headers.get('x-dev-user');
     const r = as && (await env.DB.prepare(`SELECT username, role FROM users WHERE username=?`).bind(as).first());
-    if (isDenied(env, r)) throw new Error(DENIED_MSG);
+    if (isDenied(env, r)) throw new AuthError(DENIED_MSG);
     return r ? { username: r.username, role: r.role || 'member' } : { username: env.DEV_AUTH_EMAIL, role: 'admin' };
   }
   const token = request.headers.get('cf-access-jwt-assertion');
-  if (!token || !env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) throw new Error('Please sign in.');
+  if (!token || !env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) throw new AuthError('Please sign in.');
   let email;
   try {
     email = await verifyAccessJwt(token, env);
   } catch (e) {
-    throw new Error('Could not verify your sign-in. Reload the page to try again.');
+    console.warn('Access token rejected:', e?.message || e);
+    throw new AuthError('Could not verify your sign-in. Reload the page to try again.');
   }
   const row = await env.DB.prepare(`SELECT username, role FROM users WHERE email=?`).bind(email).first();
-  if (!row) throw new Error(`${email} isn't set up in the CRM yet. Ask an admin to add you.`);
-  if (isDenied(env, row)) throw new Error(DENIED_MSG);
+  if (!row) throw new AuthError(`${email} isn't set up in the CRM yet. Ask an admin to add you.`);
+  if (isDenied(env, row)) throw new AuthError(DENIED_MSG);
   return { username: row.username, role: row.role || 'member', email };
 }
 
@@ -903,6 +1010,7 @@ async function verifyAccessJwt(token, env) {
     const r = await fetch(`https://${env.ACCESS_TEAM_DOMAIN}/cdn-cgi/access/certs`);
     jwksCache = { at: Date.now(), keys: (await r.json()).keys };
   }
+  if (header.alg !== 'RS256') throw new Error('unexpected signing algorithm');
   const jwk = jwksCache.keys.find((k) => k.kid === header.kid);
   if (!jwk) throw new Error('unknown signing key');
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
@@ -910,7 +1018,12 @@ async function verifyAccessJwt(token, env) {
   if (!ok) throw new Error('bad signature');
   const aud = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
   if (!aud.includes(env.ACCESS_AUD)) throw new Error('wrong audience');
-  if (payload.exp * 1000 < Date.now()) throw new Error('expired');
+  if (payload.iss !== `https://${env.ACCESS_TEAM_DOMAIN}`) throw new Error('wrong issuer');
+  const now = Date.now() / 1000;
+  const SKEW = 60; // seconds of clock difference allowed for "not before" and "issued at"
+  if (typeof payload.exp !== 'number' || payload.exp < now) throw new Error('expired');
+  if (typeof payload.nbf === 'number' && payload.nbf > now + SKEW) throw new Error('not valid yet');
+  if (typeof payload.iat === 'number' && payload.iat > now + SKEW) throw new Error('issued in the future');
   return String(payload.email || '').toLowerCase();
 }
 function b64urlDecode(s) {
@@ -923,7 +1036,7 @@ function b64urlDecodeStr(s) { return new TextDecoder().decode(b64urlDecode(s)); 
 const escHtml = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const msgPage = (msg) => new Response(`<!doctype html><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fruit City CRM</title>
 <body style="font:16px system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;padding:16px;text-align:center"><div><h2 style="color:#2f7d32">🍊 Fruit City CRM</h2><p>${escHtml(msg)}</p><p><a href="/cdn-cgi/access/logout">Sign out / use a different email</a></p></div>`,
-  { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  { status: 403, headers: PAGE_HEADERS });
 
 const cleanEmail = (e) => {
   const v = String(e || '').trim().toLowerCase();

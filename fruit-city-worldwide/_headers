@@ -1,0 +1,22 @@
+# Cloudflare Pages response headers for fruitcityworldwide.org (applies to every page and file).
+#
+# Content-Security-Policy, checked against every page on 2026-11-23:
+# - Scripts: only the site's own files in js/ (no inline scripts, no onclick attributes on any page).
+#   https://challenges.cloudflare.com is allowed for Cloudflare Turnstile (the "are you a person?" check),
+#   so the volunteer and newsletter forms can turn it on without changing this file.
+#   https://static.cloudflareinsights.com is Cloudflare Web Analytics, in case it is switched on for the site.
+# - Styles: css/styles.css, plus style="..." attributes, which several pages use ('unsafe-inline').
+# - Images and fonts: the site's own files only (data: for small inline images).
+# - Connections: the volunteer form posts to apply.fruitcityworldwide.org, the newsletter form to
+#   signup.fruitcityworldwide.org.
+# - Forms: the newsletter form can also post as a normal form to signup.fruitcityworldwide.org.
+# - Frames: no page embeds another site; only Turnstile may show its box. Other sites may not frame this one.
+# If you add a script, font, video or form from another site, add its address here, then check the page
+# in a browser (the console lists anything this blocks).
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://apply.fruitcityworldwide.org https://signup.fruitcityworldwide.org https://cloudflareinsights.com; form-action 'self' https://signup.fruitcityworldwide.org; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
