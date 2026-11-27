@@ -6,7 +6,7 @@ This is the samples copy. The main copy is in BrandonWilliamBridges/hpahf-site (
 
 - Highlighted text is a placeholder to confirm (pickup days, payment, contact, sizes, freshness promise).
 - Forms don't send anything yet.
-- Mushroom art is original SVG. Photo slots show what to shoot.
+- Mushroom art is original SVG. Photos in `photos/` are provided by Love On Telluride (credited in the footer); the About photo slot still shows what to shoot.
 - Health info cites Menon et al., Frontiers in Nutrition (2025), and the footer carries a not-medical-advice note.
 
 Photos to take: fresh cluster on the grow block (close-up), the fruiting area, a harvest in hand, fresh pack, dried pouch, a cooked dish.

@@ -135,6 +135,15 @@ section.dark p{color:#E9D6BF}
 .photo strong{display:block;color:var(--ink);font-size:.95rem}
 .photo span{font-size:.85rem}
 
+/* photos */
+.shot{margin:0}
+.shot img{display:block;width:100%;height:auto;border-radius:var(--radius);object-fit:cover;background:var(--cream)}
+.shot figcaption{font-size:.82rem;color:var(--soft);margin-top:8px}
+.gallery-head{margin-top:56px}
+.gallery{display:grid;gap:16px;grid-template-columns:1fr 1fr;margin-top:18px}
+@media(min-width:900px){.gallery{grid-template-columns:repeat(3,1fr)}}
+.gallery .shot img{aspect-ratio:3/4}
+
 /* finder */
 .finder{background:var(--cream);border-radius:22px;padding:28px 20px;display:grid;gap:22px}
 @media(min-width:900px){.finder{grid-template-columns:.9fr 1.1fr;padding:40px;align-items:center}}
@@ -153,6 +162,8 @@ section.dark p{color:#E9D6BF}
 .product:hover{transform:translateY(-3px)}
 .product .pic{aspect-ratio:4/3;display:grid;place-items:center;position:relative}
 .product .pic svg{width:74%}
+.product .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.product .pic .badge{z-index:1}
 .pic.fresh{background:radial-gradient(90% 90% at 50% 30%,#FFFDF8,#E8D8BD)}
 .pic.dried{background:radial-gradient(90% 90% at 50% 30%,#F5E6CC,#CFAE80)}
 .pic.kit{background:radial-gradient(90% 90% at 50% 30%,#EEF3E4,#BFD09F)}
@@ -1209,10 +1220,27 @@ textarea{min-height:120px;resize:vertical}
       <p><span class="en">Lion's Mane is also studied by researchers, and you'll see big claims about it online. The honest picture: most research so far is in the lab, and a 2025 review found the human studies are few and small. We sell it as food, and we leave health questions to your doctor.</span><span class="es">La melena de león también se estudia en investigaciones, y en internet verás afirmaciones exageradas. La realidad: la mayoría de los estudios son de laboratorio, y una revisión de 2025 encontró que los estudios en personas son pocos y pequeños. Lo vendemos como alimento y dejamos las preguntas de salud a tu médico.</span></p>
       <p class="cite"><span class="en">Source:</span><span class="es">Fuente:</span> Menon A, Jalal A, et al. “Benefits, side effects, and uses of <i>Hericium erinaceus</i> as a supplement: a systematic review.” <i>Frontiers in Nutrition</i>, 2025. <a href="https://www.frontiersin.org/journals/nutrition/articles/10.3389/fnut.2025.1641246" rel="noopener">doi:10.3389/fnut.2025.1641246</a></p>
     </div>
-    <div class="photo fade" style="min-height:420px">
-      <div><svg class="cam" aria-hidden="true"><use href="#i-cam"/></svg>
-      <strong><span class="en">Photo to take: a fresh cluster on the grow block</span><span class="es">Foto por tomar: un racimo fresco en el bloque de cultivo</span></strong>
-      <span><span class="en">Close-up, natural light, spines in focus</span><span class="es">De cerca, luz natural, espinas enfocadas</span></span></div>
+    <figure class="shot fade">
+      <img src="photos/cluster-on-block.jpg" width="1600" height="1200" alt="A large white Lion's Mane cluster with long hanging spines, growing out of its grow bag" data-en-alt="A large white Lion's Mane cluster with long hanging spines, growing out of its grow bag" data-es-alt="Un gran racimo blanco de melena de león con espinas largas y colgantes, creciendo de su bolsa de cultivo" decoding="async">
+      <figcaption><span class="en">A cluster ready to pick, still on its grow block.</span><span class="es">Un racimo listo para cosechar, todavía en su bloque de cultivo.</span></figcaption>
+    </figure>
+  </div>
+  <div class="wrap gallery-head fade">
+    <p class="eyebrow"><span class="en">From a partner's harvest</span><span class="es">De la cosecha de un cultivo aliado</span></p>
+    <h3 style="font-size:1.7rem"><span class="en">What fresh Lion's Mane looks like</span><span class="es">Así se ve la melena de león fresca</span></h3>
+    <div class="gallery">
+      <figure class="shot">
+        <img src="photos/spines-close-up.jpg" width="1200" height="1600" alt="Close-up of soft, short Lion's Mane spines on a cluster held in a hand" data-en-alt="Close-up of soft, short Lion's Mane spines on a cluster held in a hand" data-es-alt="Primer plano de las espinas cortas y suaves de un racimo de melena de león en la mano" loading="lazy" decoding="async">
+        <figcaption><span class="en">Soft spines, up close</span><span class="es">Espinas suaves, de cerca</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="photos/harvest-in-hand.jpg" width="1200" height="1600" alt="A grower holding a fresh Lion's Mane cluster up to her face" data-en-alt="A grower holding a fresh Lion's Mane cluster up to her face" data-es-alt="Una cultivadora sostiene un racimo fresco de melena de león junto a su cara" loading="lazy" decoding="async">
+        <figcaption><span class="en">Just picked</span><span class="es">Recién cosechado</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="photos/cluster-in-hand.jpg" width="1536" height="1488" alt="A rounded Lion's Mane cluster held in one hand" data-en-alt="A rounded Lion's Mane cluster held in one hand" data-es-alt="Un racimo redondo de melena de león sostenido en una mano" loading="lazy" decoding="async">
+        <figcaption><span class="en">Firm, bumpy and bright</span><span class="es">Firme, abultado y claro</span></figcaption>
+      </figure>
     </div>
   </div>
 </section>
@@ -1226,7 +1254,7 @@ textarea{min-height:120px;resize:vertical}
     </div>
     <div class="products">
       <article class="product fade">
-        <div class="pic fresh"><span class="badge"><span class="en">Most popular</span><span class="es">El favorito</span></span><svg viewBox="0 0 400 300" aria-hidden="true"><use href="#mane"/></svg></div>
+        <div class="pic fresh"><span class="badge"><span class="en">Most popular</span><span class="es">El favorito</span></span><img src="photos/fresh-cluster.jpg" width="1600" height="1200" alt="A large fresh Lion's Mane cluster" data-en-alt="A large fresh Lion's Mane cluster" data-es-alt="Un gran racimo fresco de melena de león" loading="lazy" decoding="async"></div>
         <div class="body">
           <h3><span class="en">Fresh Lion's Mane</span><span class="es">Melena de león fresca</span></h3>
           <p class="meta"><span class="en">By the half pound · <span class="tbd">sizes to confirm</span></span><span class="es">Por media libra · <span class="tbd">tamaños por confirmar</span></span></p>
@@ -1235,7 +1263,7 @@ textarea{min-height:120px;resize:vertical}
         </div>
       </article>
       <article class="product fade">
-        <div class="pic dried"><svg viewBox="0 0 400 300" aria-hidden="true"><use href="#mane-dried"/></svg></div>
+        <div class="pic dried"><img src="photos/torn-for-cooking.jpg" width="1600" height="1200" alt="Lion's Mane torn into small pieces" data-en-alt="Lion's Mane torn into small pieces" data-es-alt="Melena de león deshebrada en trozos pequeños" loading="lazy" decoding="async"></div>
         <div class="body">
           <h3><span class="en">Dried Lion's Mane</span><span class="es">Melena de león seca</span></h3>
           <p class="meta"><span class="en">Shelf-stable pouch · <span class="tbd">weight to confirm</span></span><span class="es">Bolsa de larga duración · <span class="tbd">peso por confirmar</span></span></p>
@@ -1244,7 +1272,7 @@ textarea{min-height:120px;resize:vertical}
         </div>
       </article>
       <article class="product fade">
-        <div class="pic box"><span class="badge"><span class="en">For restaurants</span><span class="es">Para restaurantes</span></span><svg viewBox="0 0 400 300" aria-hidden="true"><use href="#mane"/></svg></div>
+        <div class="pic box"><span class="badge"><span class="en">For restaurants</span><span class="es">Para restaurantes</span></span><img src="photos/fresh-harvest.jpg" width="1600" height="1200" alt="A table covered with freshly harvested Lion's Mane" data-en-alt="A table covered with freshly harvested Lion's Mane" data-es-alt="Una mesa cubierta de melena de león recién cosechada" loading="lazy" decoding="async"></div>
         <div class="body">
           <h3><span class="en">Chef &amp; bulk orders</span><span class="es">Pedidos para chefs y mayoreo</span></h3>
           <p class="meta"><span class="en">Weekly standing orders</span><span class="es">Pedidos fijos semanales</span></p>
@@ -1253,7 +1281,7 @@ textarea{min-height:120px;resize:vertical}
         </div>
       </article>
       <article class="product fade">
-        <div class="pic kit"><span class="badge soon"><span class="en">Coming soon</span><span class="es">Próximamente</span></span><svg viewBox="0 0 400 300" aria-hidden="true"><use href="#mane"/></svg></div>
+        <div class="pic kit"><span class="badge soon"><span class="en">Coming soon</span><span class="es">Próximamente</span></span><img src="photos/fruiting-shelves.jpg" width="1200" height="1600" alt="Grow blocks with Lion's Mane growing out of them" data-en-alt="Grow blocks with Lion's Mane growing out of them" data-es-alt="Bloques de cultivo con melena de león creciendo" loading="lazy" decoding="async"></div>
         <div class="body">
           <h3><span class="en">Grow-at-home block</span><span class="es">Bloque para cultivar en casa</span></h3>
           <p class="meta"><span class="en">Ready-to-fruit block · <span class="tbd">launch date to confirm</span></span><span class="es">Bloque listo para fructificar · <span class="tbd">fecha por confirmar</span></span></p>
@@ -1369,7 +1397,10 @@ textarea{min-height:120px;resize:vertical}
             <div class="tip"><span class="n">3</span><p><span class="en"><strong>Harvest.</strong> We pick when the spines are about a quarter inch long and still white.</span><span class="es"><strong>Cosechar.</strong> Cosechamos cuando las espinas miden unos 6 mm y siguen blancas.</span></p></div>
           </div>
         </div>
-        <div class="photo" style="min-height:360px"><div><svg class="cam" aria-hidden="true"><use href="#i-cam"/></svg><strong><span class="en">Photo to take: the fruiting area</span><span class="es">Foto por tomar: el área de fructificación</span></strong><span><span class="en">Blocks on shelves, a few clusters growing</span><span class="es">Bloques en repisas, algunos racimos creciendo</span></span></div></div>
+        <figure class="shot">
+          <img src="photos/fruiting-shelves.jpg" width="1200" height="1600" alt="Grow bags on white shelves with Lion's Mane clusters growing out of them, a small fan and a grow light nearby" data-en-alt="Grow bags on white shelves with Lion's Mane clusters growing out of them, a small fan and a grow light nearby" data-es-alt="Bolsas de cultivo en repisas blancas con racimos de melena de león saliendo de ellas, junto a un pequeño ventilador y una lámpara" loading="lazy" decoding="async">
+          <figcaption><span class="en">A fruiting shelf: blocks, fresh air and light.</span><span class="es">Una repisa de fructificación: bloques, aire fresco y luz.</span></figcaption>
+        </figure>
       </div>
     </div>
   </div>
@@ -1480,7 +1511,7 @@ textarea{min-height:120px;resize:vertical}
     </div>
     <div class="disclaimer">
       <p><span class="en"><b>Not medical advice.</b> The information on this site is for general education and cooking purposes only and is not medical advice. Our products are sold as food and are not intended to diagnose, treat, cure or prevent any disease. Talk with your doctor before using any mushroom for a health reason, especially if you are pregnant, nursing, have allergies or take medication.</span><span class="es"><b>No es consejo médico.</b> La información de este sitio es solo para educación general y cocina, y no es consejo médico. Nuestros productos se venden como alimento y no buscan diagnosticar, tratar, curar ni prevenir enfermedades. Habla con tu médico antes de usar cualquier hongo por motivos de salud, sobre todo si estás embarazada, lactando, tienes alergias o tomas medicamentos.</span></p>
-      <p><span class="en">Mushroom illustrations are original artwork for this site. Photos coming soon.</span><span class="es">Las ilustraciones de hongos son originales de este sitio. Fotos próximamente.</span></p>
+      <p><span class="en">Mushroom illustrations are original artwork for this site. Images provided by Love On Telluride.</span><span class="es">Las ilustraciones de hongos son originales de este sitio. Imágenes cortesía de Love On Telluride.</span></p>
     </div>
     <div class="legal"><span>© <span id="yr">2026</span> Cypress Lion's Mane Mushrooms · Cypress, Texas</span><span><span class="en">A Houston Plant and Healing Farm network grower</span><span class="es">Cultivador de la red Houston Plant and Healing Farm</span></span></div>
   </div>
@@ -1494,6 +1525,7 @@ textarea{min-height:120px;resize:vertical}
     document.querySelectorAll('[data-set-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.setLang===l));});
     document.querySelectorAll('option[data-en]').forEach(function(o){o.textContent=o.dataset[l];});
     document.querySelectorAll('[data-en-ph]').forEach(function(i){i.placeholder=i.getAttribute('data-'+l+'-ph');});
+    document.querySelectorAll('img[data-en-alt]').forEach(function(i){i.alt=i.getAttribute('data-'+l+'-alt');});
     try{localStorage.setItem('clm-lang',l);}catch(e){}
   }
   var saved=null; try{saved=localStorage.getItem('clm-lang');}catch(e){}
