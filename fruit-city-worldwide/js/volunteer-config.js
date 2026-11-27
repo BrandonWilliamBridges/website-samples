@@ -18,8 +18,10 @@ window.FCW_VOLUNTEER = {
      is live; the form then asks people to call or email instead. */
   applyEndpoint: '',
 
-  /* How people reach a person. Already public on contact.html. */
-  contactEmail: 'aceofspadeblack@gmail.com',
+  /* How people reach a person: Fruit City's shared inbox (Cloudflare Email
+     Routing forwards info@ to the team). Also shown on contact.html,
+     volunteer.html and privacy.html; change it there too if it changes. */
+  contactEmail: 'info@fruitcityworldwide.org',
   contactPhone: '346-541-5518',
 
   /* REVIEW: ways to help. `where` is shown under each one; leave ''

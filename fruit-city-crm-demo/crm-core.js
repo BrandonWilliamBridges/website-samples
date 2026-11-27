@@ -7,6 +7,7 @@ const HTML = ''; // the demo serves ui.html itself
 import { TASKS_SCHEMA, TASKS_SELECT, TASKS_ORDER, tasksScope, ensureTaskTables, userOptions, afterTaskSave, taskUpdatesApi, handleTaskEmail } from './tasks.js';
 import { ensureInteractionColumns, afterInteractionSave, handleMessageReply, DIRECTIONS } from './messages.js';
 import { ensureActivityTable, logActivity, weeklyReport, sendWeeklyReport, watchedUsers } from './activity.js';
+import { normEmail, normPhone, tagList } from './volunteer-contact.js';
 import { ensureAgreements, agreementRow, statusOf, myAgreement, myAgreementApi, agreementsAdminApi, messagesApi, acceptFromInteraction, ADMIN_CONTACTS_SQL, OPEN_WHEN_BLOCKED } from './agreement.js';
 
 const WORSHIP_TYPES = ['church', 'mosque', 'synagogue', 'hindu temple', 'buddhist temple', 'gurdwara'];
@@ -295,12 +296,6 @@ const osmKey = (id, me) => (me.role === 'admin' ? id : `${id}@${me.username}`);
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
-const normEmail = (e) => (e ? String(e).trim().toLowerCase() || null : null);
-const normPhone = (p) => {
-  const d = String(p || '').replace(/\D/g, '');
-  return d.length >= 7 ? d.slice(-10) : null;
-};
-const tagList = (...vals) => [...new Set(vals.filter(Boolean).map((v) => String(v).trim().toLowerCase()).filter(Boolean))].join(', ');
 
 async function autoTags(table, row, db) {
   if (table === 'organizations') return tagList(row.type, row.denomination, row.city, row.status);
