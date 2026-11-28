@@ -94,6 +94,7 @@ html[data-lang="en"] .es, html[data-lang="es"] .en{display:none !important}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin:1.6rem 0 0}
 .hero-art{position:relative;aspect-ratio:4/3.3;border-radius:28px;background:radial-gradient(120% 90% at 30% 20%,#FFFDF8 0%,#EFE2CC 55%,#DCC7A6 100%);box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden}
 .hero-art svg.big{width:82%;height:auto}
+.hero-art .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero-art .log{position:absolute;bottom:0;left:0;right:0;height:22%;background:linear-gradient(180deg,#7A5A40,#5A402C);border-top:6px solid #8C6A4D}
 .hero-art .log::after{content:"";position:absolute;inset:8px 0 0;background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(0,0,0,.12) 38px 40px)}
 .hero-art .stamp{position:absolute;top:18px;right:18px;width:104px;height:104px;border-radius:50%;background:var(--bark);color:#fff;display:grid;place-items:center;text-align:center;font:700 .72rem/1.15 var(--sans);letter-spacing:.06em;text-transform:uppercase;transform:rotate(8deg);padding:10px;border:3px dashed rgba(255,255,255,.4)}
@@ -141,7 +142,7 @@ section.dark p{color:#E9D6BF}
 .shot figcaption{font-size:.82rem;color:var(--soft);margin-top:8px}
 .gallery-head{margin-top:56px}
 .gallery{display:grid;gap:16px;grid-template-columns:1fr 1fr;margin-top:18px}
-@media(min-width:900px){.gallery{grid-template-columns:repeat(3,1fr)}}
+.gallery{max-width:760px}
 .gallery .shot img{aspect-ratio:3/4}
 
 /* finder */
@@ -1195,9 +1196,8 @@ textarea{min-height:120px;resize:vertical}
         <a class="btn btn-ghost" href="#guides"><span class="en">How to cook it</span><span class="es">Cómo cocinarlo</span></a>
       </div>
     </div>
-    <div class="hero-art fade" role="img" aria-label="Illustration of a fresh Lion's Mane mushroom">
-      <div class="log"></div>
-      <svg class="big" viewBox="0 0 400 300" aria-hidden="true" style="position:relative;margin-bottom:12%"><use href="#mane"/></svg>
+    <div class="hero-art fade">
+      <img class="hero-photo" src="photos/cluster-on-block.jpg" width="1600" height="1200" alt="A large fresh Lion's Mane mushroom with long white spines, growing on its grow block" data-en-alt="A large fresh Lion's Mane mushroom with long white spines, growing on its grow block" data-es-alt="Una gran melena de león fresca con largas espinas blancas, creciendo en su bloque de cultivo" fetchpriority="high" decoding="async">
       <div class="stamp"><span><span class="en">Grown in</span><span class="es">Cultivado en</span><b>Cypress</b>Texas</span></div>
     </div>
   </div>
@@ -1229,7 +1229,7 @@ textarea{min-height:120px;resize:vertical}
       <p class="cite"><span class="en">Source:</span><span class="es">Fuente:</span> Menon A, Jalal A, et al. “Benefits, side effects, and uses of <i>Hericium erinaceus</i> as a supplement: a systematic review.” <i>Frontiers in Nutrition</i>, 2025. <a href="https://www.frontiersin.org/journals/nutrition/articles/10.3389/fnut.2025.1641246" rel="noopener">doi:10.3389/fnut.2025.1641246</a></p>
     </div>
     <figure class="shot fade">
-      <img src="photos/cluster-on-block.jpg" width="1600" height="1200" alt="A large white Lion's Mane cluster with long hanging spines, growing out of its grow bag" data-en-alt="A large white Lion's Mane cluster with long hanging spines, growing out of its grow bag" data-es-alt="Un gran racimo blanco de melena de león con espinas largas y colgantes, creciendo de su bolsa de cultivo" decoding="async">
+      <img src="photos/fresh-cluster.jpg" width="1600" height="1200" alt="A large white Lion's Mane cluster covered in soft spines, growing out of its grow bag" data-en-alt="A large white Lion's Mane cluster covered in soft spines, growing out of its grow bag" data-es-alt="Un gran racimo blanco de melena de león cubierto de espinas suaves, creciendo de su bolsa de cultivo" loading="lazy" decoding="async">
       <figcaption><span class="en">A cluster ready to pick, still on its grow block.</span><span class="es">Un racimo listo para cosechar, todavía en su bloque de cultivo.</span></figcaption>
     </figure>
   </div>
@@ -1245,10 +1245,6 @@ textarea{min-height:120px;resize:vertical}
         <img src="photos/harvest-in-hand.jpg" width="1200" height="1600" alt="A grower holding a fresh Lion's Mane cluster up to her face" data-en-alt="A grower holding a fresh Lion's Mane cluster up to her face" data-es-alt="Una cultivadora sostiene un racimo fresco de melena de león junto a su cara" loading="lazy" decoding="async">
         <figcaption><span class="en">Just picked</span><span class="es">Recién cosechado</span></figcaption>
       </figure>
-      <figure class="shot">
-        <img src="photos/cluster-in-hand.jpg" width="1536" height="1488" alt="A rounded Lion's Mane cluster held in one hand" data-en-alt="A rounded Lion's Mane cluster held in one hand" data-es-alt="Un racimo redondo de melena de león sostenido en una mano" loading="lazy" decoding="async">
-        <figcaption><span class="en">Firm, bumpy and bright</span><span class="es">Firme, abultado y claro</span></figcaption>
-      </figure>
     </div>
   </div>
 </section>
@@ -1262,7 +1258,7 @@ textarea{min-height:120px;resize:vertical}
     </div>
     <div class="products">
       <article class="product fade">
-        <div class="pic fresh"><span class="badge"><span class="en">Most popular</span><span class="es">El favorito</span></span><img src="photos/fresh-cluster.jpg" width="1600" height="1200" alt="A large fresh Lion's Mane cluster" data-en-alt="A large fresh Lion's Mane cluster" data-es-alt="Un gran racimo fresco de melena de león" loading="lazy" decoding="async"></div>
+        <div class="pic fresh"><span class="badge"><span class="en">Most popular</span><span class="es">El favorito</span></span><img src="photos/cluster-in-hand.jpg" width="1536" height="1488" alt="A fresh Lion's Mane cluster held in one hand" data-en-alt="A fresh Lion's Mane cluster held in one hand" data-es-alt="Un racimo fresco de melena de león sostenido en una mano" loading="lazy" decoding="async"></div>
         <div class="body">
           <h3><span class="en">Fresh Lion's Mane</span><span class="es">Melena de león fresca</span></h3>
           <p class="meta"><span class="en">By the half pound · <span class="tbd">sizes to confirm</span></span><span class="es">Por media libra · <span class="tbd">tamaños por confirmar</span></span></p>
